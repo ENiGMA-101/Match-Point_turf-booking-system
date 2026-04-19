@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Turf Booking{% endblock %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="display-4 mb-4">🏟️ Welcome to TurfBooking Platform</h1>
+    <p class="lead">Find and book sports fields in your area! Connect with players and build your team.</p>
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h3>⚽ Field Discovery</h3>
+                    <p>Find fields by location, type, and availability</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h3>👥 Team Formation</h3>
+                    <p>Create teams and find players for your matches</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h3>🏆 Easy Booking</h3>
+                    <p>Book fields instantly with transparent pricing</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="mb-4">Recent Fields</h2>
+<div class="row">
+    {% for field in recent_fields %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                {% if field.image %}
+                    <img src="{{ field.image.url }}" class="card-img-top" alt="{{ field.name }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <span class="text-white">🏟️</span>
+                    </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ field.name }}</h5>
+                    <p class="card-text">
+                        <strong>Type:</strong> {{ field.field_type }}<br>
+                        <strong>Location:</strong> {{ field.location }}<br>
+                        <strong>Cost:</strong> ${{ field.cost_per_hour }}/hour
+                        {% if field.is_women_only %}
+                            <span class="badge bg-pink">Women Only</span>
+                        {% endif %}
+                    </p>
+                    <a href="{% url 'fields:field_detail' field.id %}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <p class="text-center">No fields available at the moment.</p>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="text-center mt-5">
+    <a href="{% url 'fields:fields' %}" class="btn btn-primary btn-lg">Browse All Fields</a>
+</div>
+{% endblock %}

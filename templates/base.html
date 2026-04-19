@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TurfBooking Platform{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <!-- Enhanced Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+                <i class="fas fa-futbol me-2"></i>
+                <span class="fw-bold">TurfBooking</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Main Navigation -->
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'fields' in request.resolver_match.namespace %}active{% endif %}" href="{% url 'fields:fields' %}">
+                            <i class="fas fa-map-marked-alt me-1"></i>Browse Fields
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'bookings' in request.resolver_match.namespace %}active{% endif %}" href="{% url 'bookings:my_bookings' %}">
+                                <i class="fas fa-calendar-check me-1"></i>My Bookings
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="quickActionsDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-bolt me-1"></i>Quick Actions
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'fields:fields' %}">
+                                    <i class="fas fa-search me-2"></i>Find Fields
+                                </a></li>
+                                {% if user.userprofile.is_field_owner %}
+                                    <li><a class="dropdown-item" href="{% url 'fields:add_field' %}">
+                                        <i class="fas fa-plus-circle me-2"></i>Add New Field
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{% url 'fields:manage_fields' %}">
+                                        <i class="fas fa-cogs me-2"></i>Manage Fields
+                                    </a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:forgot_password' %}">
+                                    <i class="fas fa-key me-2"></i>Password Recovery
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                <!-- User Navigation -->
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <!-- User Profile Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <div class="user-avatar me-2">
+                                    {% if user.userprofile.profile_picture %}
+                                        <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile" class="rounded-circle" width="30" height="30">
+                                    {% else %}
+                                        <i class="fas fa-user-circle fa-lg"></i>
+                                    {% endif %}
+                                </div>
+                                <span class="user-info">
+                                    {{ user.username }}
+                                    {% if user.userprofile.is_field_owner %}
+                                        <small class="owner-badge">Field Owner</small>
+                                    {% endif %}
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li class="dropdown-header">
+                                    <i class="fas fa-user me-2"></i>Account Settings
+                                </li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:user_profile' %}">
+                                    <i class="fas fa-id-card me-2"></i>My Profile
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'bookings:my_bookings' %}">
+                                    <i class="fas fa-calendar-check me-2"></i>My Bookings
+                                </a></li>
+                                {% if user.userprofile.is_field_owner %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li class="dropdown-header">
+                                        <i class="fas fa-building me-2"></i>Field Management
+                                    </li>
+                                    <li><a class="dropdown-item" href="{% url 'fields:manage_fields' %}">
+                                        <i class="fas fa-list me-2"></i>My Fields
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{% url 'fields:add_field' %}">
+                                        <i class="fas fa-plus me-2"></i>Add Field
+                                    </a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Sign Out
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <!-- Guest Navigation -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'accounts:login' %}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Sign In
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-light rounded-pill px-3 ms-2" href="{% url 'accounts:register' %}">
+                                <i class="fas fa-user-plus me-1"></i>Join Us
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            {% if messages %}
+                <div class="message-container">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-3" role="alert">
+                            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-triangle{% elif message.tags == 'warning' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="container-main">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Ultra Cool Footer -->
+    <footer class="cool-footer">
+        <!-- Animated Background -->
+        <div class="footer-bg">
+            <div class="wave wave1"></div>
+            <div class="wave wave2"></div>
+            <div class="wave wave3"></div>
+            <div class="floating-elements">
+                <div class="float-ball ball1"></div>
+                <div class="float-ball ball2"></div>
+                <div class="float-ball ball3"></div>
+                <div class="float-ball ball4"></div>
+            </div>
+        </div>
+
+        <div class="footer-content">
+            <div class="container">
+                <div class="row">
+                    <!-- Brand Section -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="footer-brand">
+                            <div class="brand-logo">
+                                <div class="logo-circle">
+                                    <i class="fas fa-futbol"></i>
+                                </div>
+                                <h3>TurfBooking</h3>
+                            </div>
+                            <p class="brand-tagline">Where passion meets the pitch. Your gateway to incredible sports experiences.</p>
+
+                            <div class="social-container">
+                                <span class="social-label">Connect with us</span>
+                                <div class="social-links">
+                                    <a href="https://github.com/ENiGMA-101/Arena-Finder-book-my-field-" target="_blank" class="social-link github">
+                                        <i class="fab fa-github"></i>
+                                        <span class="tooltip">GitHub</span>
+                                    </a>
+                                    <a href="#" class="social-link facebook">
+                                        <i class="fab fa-facebook-f"></i>
+                                        <span class="tooltip">Facebook</span>
+                                    </a>
+                                    <a href="#" class="social-link twitter">
+                                        <i class="fab fa-twitter"></i>
+                                        <span class="tooltip">Twitter</span>
+                                    </a>
+                                    <a href="#" class="social-link instagram">
+                                        <i class="fab fa-instagram"></i>
+                                        <span class="tooltip">Instagram</span>
+                                    </a>
+                                    <a href="#" class="social-link linkedin">
+                                        <i class="fab fa-linkedin-in"></i>
+                                        <span class="tooltip">LinkedIn</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Navigation -->
+                    <div class="col-lg-2 col-md-6 mb-4">
+                        <div class="footer-section">
+                            <h5 class="section-title">
+                                <i class="fas fa-compass me-2"></i>Navigate
+                            </h5>
+                            <ul class="footer-links">
+                                <li><a href="{% url 'home' %}">Home Base</a></li>
+                                <li><a href="{% url 'fields:fields' %}">Discover Fields</a></li>
+                                {% if user.is_authenticated %}
+                                    <li><a href="{% url 'accounts:user_profile' %}">My Zone</a></li>
+                                    <li><a href="{% url 'bookings:my_bookings' %}">My Bookings</a></li>
+                                    {% if user.userprofile.is_field_owner %}
+                                        <li><a href="{% url 'fields:add_field' %}">Create Field</a></li>
+                                    {% endif %}
+                                {% else %}
+                                    <li><a href="{% url 'accounts:login' %}">Get In</a></li>
+                                    <li><a href="{% url 'accounts:register' %}">Join Squad</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Sports Categories -->
+                    <div class="col-lg-2 col-md-6 mb-4">
+                        <div class="footer-section">
+                            <h5 class="section-title">
+                                <i class="fas fa-trophy me-2"></i>Sports Zone
+                            </h5>
+                            <ul class="footer-links sports-links">
+                                <li>
+                                    <a href="{% url 'fields:fields' %}?field_type=Football">
+                                        <i class="fas fa-futbol me-2"></i>Football
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'fields:fields' %}?field_type=Cricket">
+                                        <i class="fas fa-baseball-ball me-2"></i>Cricket
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'fields:fields' %}?field_type=Tennis">
+                                        <i class="fas fa-table-tennis me-2"></i>Tennis
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'fields:fields' %}?field_type=Basketball">
+                                        <i class="fas fa-basketball-ball me-2"></i>Basketball
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Contact & User Info -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="footer-section">
+                            <h5 class="section-title">
+                                <i class="fas fa-headset me-2"></i>Stay Connected
+                            </h5>
+
+                            <!-- Contact Cards -->
+                            <div class="contact-cards">
+                                <div class="contact-card">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="contact-info">
+                                        <span class="contact-label">Drop us a line</span>
+                                        <span class="contact-value">hamdilhasan101@gmail.com</span>
+                                    </div>
+                                </div>
+
+                                <div class="contact-card">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-phone-alt"></i>
+                                    </div>
+                                    <div class="contact-info">
+                                        <span class="contact-label">Call the squad</span>
+                                        <span class="contact-value">+880 1843-09**** TURF-NOW</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="bottom-content">
+                    <div class="copyright-section">
+                        <div class="copyright-text">
+                            <i class="fas fa-copyright me-2"></i>
+                            {{ "now"|date:"Y" }} TurfBooking Platform. Crafted with
+                            <i class="fas fa-heart heart-beat"></i>
+                            for sports lovers
+                        </div>
+                        {% if user.is_authenticated %}
+                            <div class="user-welcome">
+                                Welcome back, <strong>{{ user.username }}</strong>!
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="footer-nav">
+                        <a href="#" class="footer-nav-link">Privacy Policy</a>
+                        <a href="#" class="footer-nav-link">Terms of Service</a>
+                        <a href="#" class="footer-nav-link">Help Center</a>
+                        {% if not user.is_authenticated %}
+                            <a href="{% url 'accounts:register' %}" class="footer-nav-link join-link">
+                                <i class="fas fa-rocket me-1"></i>Join Today
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <div class="floating-action">
+            <button id="scrollTopBtn" class="scroll-top-btn">
+                <i class="fas fa-rocket"></i>
+                <span class="btn-tooltip">Blast off to top!</span>
+            </button>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom Scripts -->
+    <script>
+        // Scroll to top with rocket effect
+        const scrollBtn = document.getElementById('scrollTopBtn');
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollBtn.classList.add('visible');
+            } else {
+                scrollBtn.classList.remove('visible');
+            }
+        });
+
+        scrollBtn.addEventListener('click', () => {
+            scrollBtn.classList.add('launching');
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+
+            setTimeout(() => {
+                scrollBtn.classList.remove('launching');
+            }, 1000);
+        });
+
+        // Auto-hide alerts
+        document.addEventListener('DOMContentLoaded', () => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    const alertInstance = new bootstrap.Alert(alert);
+                    alertInstance.close();
+                }, 5000);
+            });
+        });
+
+        // Animate floating balls
+        const balls = document.querySelectorAll('.float-ball');
+        balls.forEach((ball, index) => {
+            ball.style.animationDelay = `${index * 0.5}s`;
+        });
+    </script>
+
+    <style>
+        /* Enhanced Navigation */
+        .navbar {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(30, 30, 30, 0.95)) !important;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            border-radius: 8px;
+            margin: 0 2px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white !important;
+        }
+
+        .owner-badge {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            display: block;
+            margin-top: 2px;
+        }
+
+        /* Ultra Cool Footer Styles */
+        .cool-footer {
+            position: relative;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            overflow: hidden;
+            margin-top: 80px;
+        }
+
+        /* Animated Background */
+        .footer-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            opacity: 0.1;
+            animation: wave-motion 6s ease-in-out infinite;
+        }
+
+        .wave2 {
+            animation-delay: -2s;
+            opacity: 0.05;
+            height: 120px;
+        }
+
+        .wave3 {
+            animation-delay: -4s;
+            opacity: 0.03;
+            height: 140px;
+        }
+
+        @keyframes wave-motion {
+            0%, 100% { transform: translateX(-100px) rotate(0deg); }
+            50% { transform: translateX(100px) rotate(2deg); }
+        }
+
+        /* Floating Elements */
+        .float-ball {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            opacity: 0.1;
+            animation: float-around 8s infinite ease-in-out;
+        }
+
+        .ball1 { width: 60px; height: 60px; top: 20%; left: 10%; }
+        .ball2 { width: 40px; height: 40px; top: 60%; right: 20%; animation-delay: -2s; }
+        .ball3 { width: 80px; height: 80px; top: 40%; left: 70%; animation-delay: -4s; }
+        .ball4 { width: 30px; height: 30px; top: 80%; left: 30%; animation-delay: -6s; }
+
+        @keyframes float-around {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Footer Content */
+        .footer-content {
+            position: relative;
+            z-index: 2;
+            padding: 80px 0 40px;
+            color: #ffffff;
+        }
+
+        /* Brand Section */
+        .footer-brand {
+            text-align: center;
+        }
+
+        .brand-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-circle {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 15px;
+            animation: pulse-glow 3s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(79, 172, 254, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(79, 172, 254, 0.6), 0 0 60px rgba(79, 172, 254, 0.3); }
+        }
+
+        .brand-logo h3 {
+            color: #ffffff;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-tagline {
+            color: #b8c6db;
+            font-style: italic;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        /* Social Links */
+        .social-container {
+            text-align: center;
+        }
+
+        .social-label {
+            display: block;
+            color: #b8c6db;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .social-link {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.4s ease;
+            overflow: hidden;
+        }
+
+        .social-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: all 0.4s ease;
+            z-index: -1;
+        }
+
+        .social-link.facebook::before { background: linear-gradient(135deg, #3b5998, #4267B2); }
+        .social-link.twitter::before { background: linear-gradient(135deg, #1da1f2, #0d95e8); }
+        .social-link.instagram::before { background: linear-gradient(135deg, #e4405f, #fd1d1d, #fcb045); }
+        .social-link.linkedin::before { background: linear-gradient(135deg, #0077b5, #0e76a8); }
+        .social-link.github::before { background: linear-gradient(135deg, #333, #24292e); }
+
+        .social-link:hover {
+            transform: translateY(-8px) scale(1.1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .social-link .tooltip {
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .social-link:hover .tooltip {
+            opacity: 1;
+            bottom: -30px;
+        }
+
+        /* Footer Sections */
+        .footer-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-radius: 2px;
+        }
+
+        /* Footer Links */
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #b8c6db;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .footer-links a::before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            color: #4facfe;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #4facfe;
+            padding-left: 25px;
+        }
+
+        .footer-links a:hover::before {
+            left: 5px;
+            color: #00f2fe;
+        }
+
+        /* Sports Links */
+        .sports-links a {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sports-links a:hover {
+            background: rgba(79, 172, 254, 0.1);
+            padding-left: 15px;
+        }
+
+        /* Contact Cards */
+        .contact-cards {
+            margin-bottom: 30px;
+        }
+
+        .contact-card {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(79, 172, 254, 0.2);
+        }
+
+        .contact-card:hover {
+            background: rgba(79, 172, 254, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-label {
+            display: block;
+            color: #b8c6db;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+        }
+
+        .contact-value {
+            display: block;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        /* User Status Card */
+        .user-status-card {
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.1), rgba(0, 242, 254, 0.1));
+            border: 1px solid rgba(79, 172, 254, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .status-header {
+            color: #4facfe;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
+            color: white;
+        }
+
+        /* Footer Bottom */
+        .footer-bottom {
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(79, 172, 254, 0.2);
+            padding: 25px 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .bottom-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .copyright-section {
+            color: #b8c6db;
+        }
+
+        .copyright-text {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .heart-beat {
+            color: #ff4757;
+            animation: heartbeat 1.5s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .user-welcome {
+            font-size: 0.9rem;
+            color: #4facfe;
+        }
+
+        .footer-nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .footer-nav-link {
+            color: #b8c6db;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .footer-nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            transition: width 0.3s ease;
+        }
+
+        .footer-nav-link:hover {
+            color: #4facfe;
+        }
+
+        .footer-nav-link:hover::after {
+            width: 100%;
+        }
+
+        .join-link {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white !important;
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        .join-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        /* Floating Action Button */
+        .floating-action {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .scroll-top-btn {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(100px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scroll-top-btn.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scroll-top-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 15px 30px rgba(79, 172, 254, 0.4);
+        }
+
+        .scroll-top-btn.launching {
+            animation: rocket-launch 1s ease-out;
+        }
+
+        @keyframes rocket-launch {
+            0% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.2); }
+            100% { transform: translateY(-100px) scale(0.8); opacity: 0; }
+        }
+
+        .btn-tooltip {
+            position: absolute;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .scroll-top-btn:hover .btn-tooltip {
+            opacity: 1;
+            bottom: 75px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .footer-content {
+                padding: 60px 0 30px;
+            }
+
+            .bottom-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .footer-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .social-links {
+                gap: 10px;
+            }
+
+            .contact-card {
+                text-align: left;
+            }
+
+            .quick-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .scroll-top-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .footer-nav {
+                gap: 15px;
+            }
+
+            .footer-nav-link {
+                font-size: 0.9rem;
+            }
+
+            .brand-logo h3 {
+                font-size: 1.5rem;
+            }
+
+            .logo-circle {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</body>
+</html>
