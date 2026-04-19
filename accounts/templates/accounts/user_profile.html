@@ -1,0 +1,362 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ user.username }} - Profile{% endblock %}
+{% block content %}
+<div class="profile-header">
+    <div class="profile-avatar">
+        {% if user_profile.profile_picture %}
+            <img src="{{ user_profile.profile_picture.url }}" alt="Profile Picture" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid white;">
+        {% else %}
+            <div style="width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; border: 4px solid white; font-size: 2rem; color: white;">
+                👤
+            </div>
+        {% endif %}
+    </div>
+    <h2>{{ user.get_full_name|default:user.username }}</h2>
+    <p>{{ user.email }}</p>
+    {% if user_profile.is_field_owner %}
+        <span class="field-owner-badge">Field Owner</span>
+    {% endif %}
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <!-- Profile Information -->
+        <div class="card">
+            <div class="card-header">
+                <h5>👤 Profile Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    {% if user_profile.profile_picture %}
+                        <img src="{{ user_profile.profile_picture.url }}" alt="Profile Picture" 
+                             style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        <div style="width: 80px; height: 80px; border-radius: 50%; background: #667eea; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; margin: 0 auto;">
+                            👤
+                        </div>
+                    {% endif %}
+                </div>
+                <p><strong>Username:</strong> {{ user.username }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Name:</strong> {{ user.get_full_name|default:"Not provided" }}</p>
+                <p><strong>Age:</strong> {{ user_profile.age }}</p>
+                <p><strong>Gender:</strong> {{ user_profile.gender }}</p>
+                <p><strong>Mobile:</strong> {{ user_profile.mobile|default:"Not provided" }}</p>
+                <p><strong>Address:</strong> {{ user_profile.address|default:"Not provided" }}</p>
+                {% if user_profile.emergency_contact %}
+                    <p><strong>Emergency Contact:</strong> {{ user_profile.emergency_contact }}</p>
+                {% endif %}
+                <p><strong>Member Since:</strong> {{ user.date_joined|date:"M Y" }}</p>
+                {% if user_profile.is_field_owner %}
+                    <p><span class="badge bg-success">Field Owner</span></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>✏️ Edit Profile</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="profileForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        {{ user_form.username }}
+                    </div>         
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        {{ user_form.email }}
+                    </div> 
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">First Name</label>
+                                {{ user_form.first_name }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Last Name</label>
+                                {{ user_form.last_name }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Age</label>
+                                {{ profile_form.age }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Gender</label>
+                                {{ profile_form.gender }}
+                            </div>
+                        </div>
+                    </div>  
+                    <div class="mb-3">
+                        <label class="form-label">Mobile</label>
+                        {{ profile_form.mobile }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        {{ profile_form.address }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Emergency Contact</label>
+                        {{ profile_form.emergency_contact }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Profile Picture</label>
+                        {{ profile_form.profile_picture }}
+                    </div>
+                    <div class="form-check mb-3">
+                        {{ profile_form.is_field_owner }}
+                        <label class="form-check-label">
+                            I am a field owner
+                        </label>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">💾 Update Profile</button>
+                    </div>
+                </form>
+                <form method="post" action="{% url 'accounts:delete_account' %}"
+                      onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.')"
+                      class="mt-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger w-100">🗑️ Delete Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% if user_profile.is_field_owner %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>🏟️ Field Owner Dashboard</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="d-grid">
+                            <a href="{% url 'fields:add_field' %}" class="btn btn-success btn-lg">
+                                ➕ Add New Field
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-grid">
+                            <a href="{% url 'fields:manage_fields' %}" class="btn btn-info btn-lg">
+                                📋 Manage My Fields
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-grid">
+                            <a href="{% url 'fields:fields' %}" class="btn btn-primary btn-lg">
+                                🔍 Browse All Fields
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% if owned_fields %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>🏟️ My Fields</h5>
+                <a href="{% url 'fields:add_field' %}" class="btn btn-success">+ Add Field</a>
+            </div>
+            <div class="card-body">
+                {% for field in owned_fields %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6>{{ field.name }}</h6>
+                                    <p class="mb-1">
+                                        🏆 {{ field.field_type }}<br>
+                                        📍 {{ field.location }}<br>
+                                        💰 ${{ field.cost_per_hour }}/hour<br>
+                                        👥 Capacity: {{ field.capacity }}
+                                    </p>
+                                    {% if not field.is_active %}
+                                        <span class="badge bg-warning">Inactive</span>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <a href="{% url 'fields:field_detail' field.id %}" class="btn btn-info btn-sm">View</a>
+                                    <a href="{% url 'fields:edit_field' field.id %}" class="btn btn-primary btn-sm">Edit</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>📊 Quick Overview</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h3 class="text-primary">{{ bookings.count }}</h3>
+                            <p class="mb-0">Total Bookings</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h3 class="text-success">
+                                {% if owned_fields %}{{ owned_fields.count }}{% else %}0{% endif %}
+                            </h3>
+                            <p class="mb-0">Fields Owned</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Profile picture preview
+    const profilePictureInput = document.getElementById('{{ profile_form.profile_picture.id_for_label }}');
+    if (profilePictureInput) {
+        profilePictureInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Find profile picture display and update it
+                    const profilePics = document.querySelectorAll('.profile-avatar img, .card-body img');
+                    profilePics.forEach(img => {
+                        if (img.alt === 'Profile Picture') {
+                            img.src = e.target.result;
+                        }
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    const form = document.getElementById('profileForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const age = form.querySelector('input[name="age"]').value;
+            const mobile = form.querySelector('input[name="mobile"]').value;
+            if (!age || age < 1 || age > 120) {
+                alert('Please enter a valid age between 1 and 120.');
+                e.preventDefault();
+                return false;
+            }
+            if (mobile && mobile.length > 0 && mobile.length < 10) {
+                alert('Please enter a valid mobile number (at least 10 digits).');
+                e.preventDefault();
+                return false;
+            }
+        });
+    }
+});
+</script>
+<style>
+.emergency-visible {
+    background: linear-gradient(135deg, #fd746c, #ff9068);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+.form-control:focus {
+    border-color: #4facfe;
+    box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+}
+.badge.bg-success {
+    background: linear-gradient(135deg, #4ecdc4, #44a08d) !important;
+}
+.badge.bg-info {
+    background: linear-gradient(135deg, #4facfe, #00f2fe) !important;
+}
+.card {
+    transition: all 0.3s ease;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+.btn {
+    transition: all 0.3s ease;
+}
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.stat-card {
+    padding: 20px;
+    text-align: center;
+}
+.stat-card h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.booking-status {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+.status-confirmed {
+    background: #d4edda;
+    color: #155724;
+}
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+.status-completed {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+.field-owner-badge {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+@media (max-width: 768px) {
+    .col-md-6 {
+        margin-bottom: 20px;
+    }
+    .stat-card h3 {
+        font-size: 2rem;
+    }
+}
+</style>
+{% endblock %}
