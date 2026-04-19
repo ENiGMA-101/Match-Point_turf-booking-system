@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Sign In{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Welcome Back!</h3>
+                <p class="text-center text-muted mb-0">Sign in to your account</p>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" name="username" id="username" 
+                               placeholder="Enter your username" required 
+                               value="{{ request.POST.username|default:'' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" name="password" id="password" 
+                               placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 mb-3">Sign In</button>
+                </form>
+                <div class="text-center">
+                    <div class="mb-2">
+                        <a href="{% url 'accounts:forgot_password' %}" class="text-warning text-decoration-none">
+                            🔐 Forgot your password?
+                        </a>
+                    </div>
+                    <small class="text-muted">
+                        New here? <a href="{% url 'accounts:register' %}" class="text-decoration-none">Create an account</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
