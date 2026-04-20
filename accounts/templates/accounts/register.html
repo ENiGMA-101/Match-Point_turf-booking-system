@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Register</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" name="username" id="username" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" id="email" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">First Name</label>
+                                <input type="text" class="form-control" name="first_name" id="first_name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" name="last_name" id="last_name" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" name="password" id="password" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="age" class="form-label">Age</label>
+                                <input type="number" class="form-control" name="age" id="age" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="mobile" class="form-label">Mobile</label>
+                                <input type="text" class="form-control" name="mobile" id="mobile" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" class="form-control" name="address" id="address" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select class="form-control" name="gender" id="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="emergency_contact" class="form-label">Emergency Contact</label>
+                                <input type="text" class="form-control" name="emergency_contact" id="emergency_contact">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" name="is_field_owner" id="is_field_owner">
+                        <label class="form-check-label" for="is_field_owner">
+                            I am a field owner
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Register</button>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Already have an account? <a href="{% url 'accounts:login' %}">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
