@@ -32,4 +32,14 @@ class Field(models.Model):
     amenities = models.TextField(max_length=500, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
-  
+
+    def get_90min_cost(self):
+        """Get cost for 90 minutes (1.5 hours)"""
+        if self.availability_type == 'Free':
+            return Decimal('0.00')
+        return self.cost_per_hour * Decimal('1.5')
+
+    def get_formatted_90min_cost(self):
+        """Get formatted cost for display"""
+        cost = self.get_90min_cost()
+        return f"${cost:.2f}"
