@@ -88,3 +88,91 @@ def delete_field(request, field_id):
         messages.success(request, 'Field deleted successfully.')
         return redirect('fields:manage_fields')
     return render(request, 'fields/confirm_delete_field.html', {'field': field})
+
+@login_required
+def add_review(request, field_id):
+    field = get_object_or_404(Field, id=field_id)
+
+    try:
+        has_booking = Booking.objects.filter(
+            user=request.user,
+            field=field,
+            status__in=['Confirmed', 'Completed'] 
+        ).exists()
+
+        user_booking = Booking.objects.filter(
+            user=request.user,
+            field=field
+        ).first()
+
+        user_booking_status = user_booking.status if user_booking else None
+
+    except ImportError:
+        has_booking = True 
+        user_booking_status = None
+
+    if not has_booking:
+        if user_booking_status:
+            if user_booking_status == 'Pending':
+                messages.warning(request,
+                                 "Your booking is still pending approval. You can review this field once your booking is confirmed.")
+            elif user_booking_status == 'Cancelled':
+                messages.info(request, "Your booking was cancelled. To review this field, please make a new booking.")
+            else:
+                messages.info(request,
+                              f"Your booking status is '{user_booking_status}'. You can review once your booking is confirmed or completed.")
+        else:
+            messages.info(request,
+                          "To review this field, please book it first. You can review after your booking is confirmed.")
+
+        return redirect('fields:field_detail', field_id=field_id)
+
+    existing_review = Review.objects.filter(user=request.user, field=field).first()
+
+    if request.method == 'POST':
+        review_form = ReviewForm(request.POST, instance=existing_review)
+
+        if review_form.is_valid():
+            review = review_form.save(commit=False)
+            review.user = request.user
+            review.field = field
+            review.save()
+
+            uploaded_files = request.FILES.getlist('review_images')
+            image_captions = request.POST.getlist('image_captions')
+
+            if existing_review:
+                ReviewImage.objects.filter(review=review).delete()
+
+            for i, uploaded_file in enumerate(uploaded_files[:5]):
+                caption = image_captions[i] if i < len(image_captions) else ''
+                ReviewImage.objects.create(
+                    review=review,
+                    image=uploaded_file,
+                    caption=caption
+                )
+
+            if existing_review:
+                messages.success(request, "Review updated successfully!")
+            else:
+                messages.success(request, "Review added successfully!")
+
+            return redirect('fields:field_detail', field_id=field_id)
+        else:
+            messages.error(request, "Please fix the errors in the form.")
+    else:
+        review_form = ReviewForm(instance=existing_review)
+
+    existing_images = []
+    if existing_review:
+        existing_images = ReviewImage.objects.filter(review=existing_review)
+
+    context = {
+        'field': field,
+        'review_form': review_form,
+        'existing_review': existing_review,
+        'existing_images': existing_images,
+        'user_booking_status': user_booking_status,
+    }
+    return render(request, 'fields/add_review.html', context)
+
