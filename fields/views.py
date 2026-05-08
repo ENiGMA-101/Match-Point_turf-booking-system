@@ -271,3 +271,41 @@ def manage_fields(request):
 
     owned_fields = Field.objects.filter(owner=request.user)
     return render(request, 'fields/manage_fields.html', {'owned_fields': owned_fields})
+
+@login_required
+def add_field(request):
+    try:
+        user_profile = request.user.userprofile
+    except:
+        user_profile, created = UserProfile.objects.get_or_create(
+            user=request.user,
+            defaults={
+                'age': 18,
+                'gender': 'Male',
+                'is_field_owner': False
+            }
+        )
+
+    if not user_profile.is_field_owner:
+        messages.error(request, "You need to be a field owner to add fields.")
+        return redirect('accounts:user_profile')
+
+    if request.method == 'POST':
+        field_form = FieldForm(request.POST, request.FILES)
+
+        if field_form.is_valid():
+            field = field_form.save(commit=False)
+            field.owner = request.user
+            field.save()
+
+            create_default_time_slots(field)
+
+            messages.success(request, "Field added successfully with time slots!")
+            return redirect('fields:manage_fields')
+        else:
+            messages.error(request, "Please fix the errors below.")
+    else:
+        field_form = FieldForm()
+
+    return render(request, 'fields/add_field.html', {'field_form': field_form})
+
