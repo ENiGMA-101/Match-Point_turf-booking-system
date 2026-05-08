@@ -360,3 +360,24 @@ def manage_time_slots(request, field_id):
     }
     return render(request, 'fields/manage_time_slots.html', context)
 
+
+def search_fields(request):
+    query = request.GET.get('q', '')
+
+    if query:
+        fields_list = Field.objects.filter(
+            Q(name__icontains=query) |
+            Q(location__icontains=query) |
+            Q(field_type__icontains=query) |
+            Q(description__icontains=query),
+            is_active=True
+        )
+    else:
+        fields_list = Field.objects.filter(is_active=True)
+
+    context = {
+        'fields': fields_list,
+        'query': query,
+    }
+    return render(request, 'fields/fields.html', context)
+
