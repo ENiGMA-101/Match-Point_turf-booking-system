@@ -163,3 +163,26 @@ def join_team(request, team_id):
         return redirect('fields:field_detail', field_id=team_formation.booking.field.id)
 
     return render(request, 'bookings/join_team.html', {'team_formation': team_formation})
+
+
+@login_required
+def manage_join_requests(request, team_id):
+    team_formation = get_object_or_404(TeamFormation, id=team_id, booking__user=request.user)
+    join_requests = JoinRequest.objects.filter(team_formation=team_formation, status='Pending')
+
+    if request.method == 'POST':
+        request_id = request.POST.get('request_id')
+        action = request.POST.get('action')
+
+        join_request = get_object_or_404(JoinRequest, id=request_id, team_formation=team_formation)
+
+        if action == 'accept':
+            join_request.status = 'Accepted'
+            join_request.save()
+            messages.success(request, f"{join_request.user.username} has been accepted to your team!")
+        elif action == 'reject':
+            join_request.status = 'Rejected'
+            join_request.save()
+            messages.info(request, f"{join_request.user.username}'s request has been rejected.")
+
+        return redirect('bookings:manage_join_requests', team_id=team_id)
