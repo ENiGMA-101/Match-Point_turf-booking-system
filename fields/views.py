@@ -79,3 +79,12 @@ def add_field(request):
         field_form = FieldForm()
 
     return render(request, 'fields/add_field.html', {'field_form': field_form})
+
+@login_required
+def delete_field(request, field_id):
+    field = get_object_or_404(Field, id=field_id, owner=request.user)
+    if request.method == 'POST':
+        field.delete()
+        messages.success(request, 'Field deleted successfully.')
+        return redirect('fields:manage_fields')
+    return render(request, 'fields/confirm_delete_field.html', {'field': field})
