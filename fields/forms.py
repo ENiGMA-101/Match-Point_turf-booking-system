@@ -18,3 +18,24 @@ class FieldForm(forms.ModelForm):
             'capacity': forms.NumberInput(attrs={'class': 'form-control'}),
             'amenities': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
+
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'experience_title', 'comment']
+        widgets = {
+            'rating': forms.Select(
+                choices=[(i, f'{i} Star{"s" if i > 1 else ""}') for i in range(1, 6)], 
+                attrs={'class': 'form-control'}
+            ),
+            'experience_title': forms.TextInput(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Give your experience a title (e.g., "Great field for weekend games!")'
+            }),
+            'comment': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'rows': 4,
+                'placeholder': 'Share your detailed experience...'
+            }),
+        }
