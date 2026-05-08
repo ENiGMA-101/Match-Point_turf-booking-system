@@ -34,3 +34,24 @@ class Booking(models.Model):
 
     class Meta:
         app_label = 'bookings'
+
+
+class TeamFormation(models.Model):
+    SKILL_LEVELS = (
+        ('Beginner', 'Beginner'),
+        ('Intermediate', 'Intermediate'),
+        ('Advanced', 'Advanced'),
+    )
+
+    booking = models.OneToOneField(Booking, on_delete=models.CASCADE, related_name='team_formation')
+    looking_for_players = models.BooleanField(default=False)
+    required_players = models.PositiveIntegerField(default=1)
+    skill_level = models.CharField(max_length=20, choices=SKILL_LEVELS, blank=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Team for {self.booking}"
+
+    class Meta:
+        app_label = 'bookings'
