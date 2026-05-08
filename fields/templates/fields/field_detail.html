@@ -1,0 +1,458 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ field.name }} - Field Details{% endblock %}
+
+{% block content %}
+<div class="field-detail-header">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1 class="display-5">{{ field.name }}</h1>
+            <p class="lead">{{ field.field_type }} • {{ field.location }}</p>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+                <span class="badge {{ field.availability_type|lower }}-field">
+                    {{ field.availability_type }}
+                </span>
+                {% if field.is_women_only %}
+                    <span class="badge women-only-indicator">Women Only</span>
+                {% endif %}
+                <span class="badge bg-info">Capacity: {{ field.capacity }}</span>
+                {% if avg_rating %}
+                    <span class="badge bg-success">
+                        ⭐ {{ avg_rating|floatformat:1 }}/5
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4 text-end">
+            <h3 class="text-white">${{ field.cost_per_hour }}/hour</h3>
+            <p class="text-white-50">90-minute slot: {{ field.get_formatted_90min_cost }}</p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'bookings:book_field' field.id %}" class="btn btn-success btn-lg">
+                    📅 Book Now
+                </a>
+            {% else %}
+                <a href="{% url 'accounts:login' %}" class="btn btn-warning btn-lg">
+                    Login to Book
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Field Image -->
+        <div class="card mb-4">
+            {% if field.image %}
+                <img src="{{ field.image.url }}" class="card-img-top" alt="{{ field.name }}" style="height: 400px; object-fit: cover;">
+            {% else %}
+                <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <span class="text-white" style="font-size: 4rem;">🏟️</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Description -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>📝 Description</h4>
+            </div>
+            <div class="card-body">
+                <p>{{ field.description }}</p>
+            </div>
+        </div>
+
+        <!-- Amenities -->
+        {% if field.amenities %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>🏆 Amenities</h4>
+            </div>
+            <div class="card-body">
+                <div class="field-amenities">
+                    {{ field.amenities|linebreaks }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Enhanced Reviews Section -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4>⭐ Reviews & Experiences ({{ reviews.count }})</h4>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'fields:add_review' field.id %}" class="btn btn-primary btn-sm">
+                        ✨ Share Your Experience
+                    </a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% for review in reviews %}
+                    <div class="review-card enhanced-review">
+                        <div class="review-header">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="reviewer-info">
+                                    <div class="d-flex align-items-center">
+                                        {% if review.user.userprofile.profile_picture %}
+                                            <img src="{{ review.user.userprofile.profile_picture.url }}" 
+                                                 alt="Profile" class="reviewer-avatar">
+                                        {% else %}
+                                            <div class="reviewer-avatar-placeholder">
+                                                {{ review.user.username|first|upper }}
+                                            </div>
+                                        {% endif %}
+                                        <div class="ms-3">
+                                            <strong>{{ review.user.get_full_name|default:review.user.username }}</strong>
+                                            {% if review.experience_title %}
+                                                <h6 class="experience-title mt-1">{{ review.experience_title }}</h6>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="rating-and-date text-end">
+                                    <div class="rating-stars">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= review.rating %}
+                                                ⭐
+                                            {% else %}
+                                                ☆
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                                    {% if review.updated_at != review.created_at %}
+                                        <small class="text-muted d-block">Updated {{ review.updated_at|date:"M d, Y" }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if review.comment %}
+                            <div class="review-content mt-3">
+                                <p>{{ review.comment|linebreaks }}</p>
+                            </div>
+                        {% endif %}
+
+                        <!-- Review Images -->
+                        {% if review.images.all %}
+                            <div class="review-images mt-3">
+                                <div class="row">
+                                    {% for image in review.images.all %}
+                                        <div class="col-md-4 col-sm-6 mb-3">
+                                            <div class="review-image-container">
+                                                <img src="{{ image.image.url }}" 
+                                                     alt="Review Image" 
+                                                     class="review-image"
+                                                     onclick="openImageModal('{{ image.image.url }}', '{{ image.caption|default:"Experience photo" }}')">
+                                                {% if image.caption %}
+                                                    <div class="image-caption">
+                                                        <small>{{ image.caption }}</small>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if user == review.user %}
+                            <div class="review-actions mt-3">
+                                <a href="{% url 'fields:add_review' field.id %}" class="btn btn-outline-primary btn-sm">
+                                    ✏️ Edit Review
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <hr class="review-divider">
+                {% empty %}
+                    <div class="text-center">
+                        <div class="empty-reviews">
+                            <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                            <h5>No reviews yet</h5>
+                            <p class="text-muted">Be the first to share your experience!</p>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'fields:add_review' field.id %}" class="btn btn-primary">
+                                    ✨ Write First Review
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Pricing Info -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>💰 Pricing</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <h4>${{ field.cost_per_hour }}<small class="text-muted">/hour</small></h4>
+                    <h5 class="text-primary">{{ field.get_formatted_90min_cost }}<small class="text-muted">/90min slot</small></h5>
+                    {% if field.availability_type == 'Free' %}
+                        <span class="badge free-field fs-6">FREE FIELD</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Availability Calendar -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>📅 Availability (Next 7 Days)</h5>
+            </div>
+            <div class="card-body">
+                {% for date_info in available_dates %}
+                    <div class="card mb-2 {% if date_info.is_fully_booked %}border-danger{% else %}border-success{% endif %}">
+                        <div class="card-body p-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ date_info.date|date:"M d" }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ date_info.date|date:"D" }}</small>
+                                </div>
+                                <div class="text-end">
+                                    {% if date_info.is_fully_booked %}
+                                        <span class="badge bg-danger">Fully Booked</span>
+                                    {% else %}
+                                        <span class="badge bg-success">{{ date_info.available_slots }}/{{ date_info.total_slots }} Available</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="d-grid mt-3">
+                    <a href="{% url 'bookings:book_field' field.id %}" class="btn btn-primary">
+                        📅 View All Slots & Book
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Time Slots -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>🕐 Standard Time Slots (90 min each)</h5>
+            </div>
+            <div class="card-body">
+                {% for slot in time_slots %}
+                    <div class="time-slot">
+                        <strong>{{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}</strong>
+                        <br>
+                        <small class="text-success">Available for booking</small>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">No time slots available</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Team Formations -->
+        {% if team_formations %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>👥 Looking for Players</h5>
+            </div>
+            <div class="card-body">
+                {% for team in team_formations %}
+                    <div class="team-formation-card">
+                        <h6>{{ team.booking.user.username }}'s Team</h6>
+                        <p><strong>Date:</strong> {{ team.booking.booking_date }}</p>
+                        <p><strong>Time:</strong> {{ team.booking.time_slot.start_time }} - {{ team.booking.time_slot.end_time }}</p>
+                        <p><strong>Need:</strong> {{ team.required_players }} players</p>
+                        {% if team.skill_level %}
+                            <p><strong>Skill Level:</strong> {{ team.skill_level }}</p>
+                        {% endif %}
+                        {% if team.description %}
+                            <p>{{ team.description }}</p>
+                        {% endif %}
+                        {% if user.is_authenticated and user != team.booking.user %}
+                            <a href="{% url 'bookings:join_team' team.id %}" class="btn btn-light btn-sm">
+                                Join Team
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Field Owner Info -->
+        <div class="card">
+            <div class="card-header">
+                <h5>👤 Field Owner</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>{{ field.owner.get_full_name|default:field.owner.username }}</strong></p>
+                <p class="text-muted">Member since {{ field.owner.date_joined|date:"M Y" }}</p>
+                <span class="field-owner-badge">Verified Owner</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalTitle">Experience Photo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="Review Image" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openImageModal(imageUrl, caption) {
+    const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+    document.getElementById('modalImage').src = imageUrl;
+    document.getElementById('imageModalTitle').textContent = caption || 'Experience Photo';
+    modal.show();
+}
+</script>
+
+<style>
+/* Enhanced Review Styles */
+.enhanced-review {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid #4facfe;
+    transition: all 0.3s ease;
+}
+
+.enhanced-review:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.reviewer-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #4facfe;
+}
+
+.reviewer-avatar-placeholder {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.experience-title {
+    color: #4facfe;
+    font-weight: 600;
+    margin: 0;
+}
+
+.rating-stars {
+    color: #ffd700;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.review-images {
+    border-top: 1px solid #e9ecef;
+    padding-top: 15px;
+}
+
+.review-image-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.review-image-container:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.review-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    transition: all 0.3s ease;
+}
+
+.review-image:hover {
+    transform: scale(1.05);
+}
+
+.image-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    color: white;
+    padding: 10px;
+    transform: translateY(100%);
+    transition: all 0.3s ease;
+}
+
+.review-image-container:hover .image-caption {
+    transform: translateY(0);
+}
+
+.review-divider {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #4facfe, transparent);
+    margin: 30px 0;
+}
+
+.empty-reviews {
+    padding: 40px 20px;
+    background: #f8f9fc;
+    border-radius: 15px;
+}
+
+.review-actions {
+    border-top: 1px solid #e9ecef;
+    padding-top: 15px;
+}
+
+/* Modal Enhancements */
+.modal-content {
+    border-radius: 15px;
+    border: none;
+    overflow: hidden;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: white;
+    border-bottom: none;
+}
+
+.modal-body {
+    padding: 0;
+}
+
+#modalImage {
+    max-height: 70vh;
+    object-fit: contain;
+}
+</style>
+{% endblock %}
