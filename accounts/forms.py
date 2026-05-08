@@ -68,3 +68,49 @@ class ForgotPasswordForm(forms.Form):
             raise forms.ValidationError("Sorry, we couldn't find an account with that username.")
         
         return username
+
+class ResetPasswordForm(forms.Form):
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'readonly': True,
+            'style': 'background-color: #f8f9fa;'
+        })
+    )
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'readonly': True,
+            'style': 'background-color: #f8f9fa;'
+        })
+    )
+    new_password = forms.CharField(
+        label='New Password',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Create a strong password',
+            'minlength': '6'
+        }),
+        help_text='Password should be at least 6 characters long'
+    )
+    confirm_password = forms.CharField(
+        label='Confirm Password',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Type your password again'
+        })
+    )
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('new_password')
+        confirm_password = cleaned_data.get('confirm_password')
+        
+        if password and confirm_password:
+            if password != confirm_password:
+                raise forms.ValidationError("The passwords you entered don't match. Please try again.")
+            
+            if len(password) < 6:
+                raise forms.ValidationError("Password is too short. Please use at least 6 characters.")
+        
+        return cleaned_data
