@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block title %}{{ user.username }} - Profile{% endblock %}
+
 {% block content %}
 <div class="profile-header">
     <div class="profile-avatar">
@@ -18,6 +20,8 @@
         <span class="field-owner-badge">Field Owner</span>
     {% endif %}
 </div>
+
+<!-- Simple Profile View -->
 <div class="row">
     <div class="col-md-6">
         <!-- Profile Information -->
@@ -53,6 +57,8 @@
             </div>
         </div>
     </div>
+    
+    <!-- Edit Profile Form -->
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
@@ -61,14 +67,18 @@
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data" id="profileForm">
                     {% csrf_token %}
+                    
+                    <!-- User Form Fields -->
                     <div class="mb-3">
                         <label class="form-label">Username</label>
                         {{ user_form.username }}
-                    </div>         
+                    </div>
+                    
                     <div class="mb-3">
                         <label class="form-label">Email</label>
                         {{ user_form.email }}
-                    </div> 
+                    </div>
+                    
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -83,6 +93,8 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Profile Form Fields -->
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -96,33 +108,41 @@
                                 {{ profile_form.gender }}
                             </div>
                         </div>
-                    </div>  
+                    </div>
+                    
                     <div class="mb-3">
                         <label class="form-label">Mobile</label>
                         {{ profile_form.mobile }}
                     </div>
+                    
                     <div class="mb-3">
                         <label class="form-label">Address</label>
                         {{ profile_form.address }}
                     </div>
+                    
                     <div class="mb-3">
                         <label class="form-label">Emergency Contact</label>
                         {{ profile_form.emergency_contact }}
                     </div>
+                    
                     <div class="mb-3">
                         <label class="form-label">Profile Picture</label>
                         {{ profile_form.profile_picture }}
                     </div>
+                    
                     <div class="form-check mb-3">
                         {{ profile_form.is_field_owner }}
                         <label class="form-check-label">
                             I am a field owner
                         </label>
                     </div>
+                    
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary">💾 Update Profile</button>
                     </div>
                 </form>
+
+                <!-- Separate delete form (not nested) -->
                 <form method="post" action="{% url 'accounts:delete_account' %}"
                       onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.')"
                       class="mt-2">
@@ -133,6 +153,8 @@
         </div>
     </div>
 </div>
+
+<!-- Field Owner Actions -->
 {% if user_profile.is_field_owner %}
 <div class="row mt-4">
     <div class="col-md-12">
@@ -169,6 +191,8 @@
     </div>
 </div>
 {% endif %}
+
+<!-- My Fields Section (for field owners) -->
 {% if owned_fields %}
 <div class="row mt-4">
     <div class="col-md-12">
@@ -207,6 +231,8 @@
     </div>
 </div>
 {% endif %}
+
+<!-- Quick Stats Section -->
 <div class="row mt-4">
     <div class="col-md-12">
         <div class="card">
@@ -234,6 +260,7 @@
         </div>
     </div>
 </div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Profile picture preview
@@ -256,16 +283,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Form validation
     const form = document.getElementById('profileForm');
     if (form) {
         form.addEventListener('submit', function(e) {
             const age = form.querySelector('input[name="age"]').value;
             const mobile = form.querySelector('input[name="mobile"]').value;
+            
             if (!age || age < 1 || age > 120) {
                 alert('Please enter a valid age between 1 and 120.');
                 e.preventDefault();
                 return false;
             }
+            
             if (mobile && mobile.length > 0 && mobile.length < 10) {
                 alert('Please enter a valid mobile number (at least 10 digits).');
                 e.preventDefault();
@@ -275,6 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
 <style>
 .emergency-visible {
     background: linear-gradient(135deg, #fd746c, #ff9068);
@@ -284,64 +316,80 @@ document.addEventListener('DOMContentLoaded', function() {
     font-size: 0.7rem;
     font-weight: 600;
 }
+
 .form-control:focus {
     border-color: #4facfe;
     box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
 }
+
 .badge.bg-success {
     background: linear-gradient(135deg, #4ecdc4, #44a08d) !important;
 }
+
 .badge.bg-info {
     background: linear-gradient(135deg, #4facfe, #00f2fe) !important;
 }
+
 .card {
     transition: all 0.3s ease;
     border: none;
     border-radius: 15px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
+
 .card:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
+
 .btn {
     transition: all 0.3s ease;
 }
+
 .btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
+
 .stat-card {
     padding: 20px;
     text-align: center;
 }
+
 .stat-card h3 {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 10px;
 }
+
 .booking-status {
     padding: 5px 10px;
     border-radius: 15px;
     font-size: 0.8rem;
     font-weight: 600;
 }
+
 .status-pending {
     background: #fff3cd;
     color: #856404;
 }
+
 .status-confirmed {
     background: #d4edda;
     color: #155724;
 }
+
 .status-cancelled {
     background: #f8d7da;
     color: #721c24;
 }
+
 .status-completed {
     background: #d1ecf1;
     color: #0c5460;
 }
+
+/* Field Owner Badge */
 .field-owner-badge {
     background: linear-gradient(135deg, #f093fb, #f5576c);
     color: white;
@@ -350,10 +398,13 @@ document.addEventListener('DOMContentLoaded', function() {
     font-size: 0.8rem;
     font-weight: 600;
 }
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
     .col-md-6 {
         margin-bottom: 20px;
     }
+    
     .stat-card h3 {
         font-size: 2rem;
     }
