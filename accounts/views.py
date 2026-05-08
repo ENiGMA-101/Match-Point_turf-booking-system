@@ -72,3 +72,21 @@ def user_login(request):
             messages.error(request, 'Invalid username or password. Please try again.')
     
     return render(request, 'accounts/login.html')
+
+@login_required
+def delete_account(request):
+    if request.method == 'POST':
+        user = request.user
+        try:
+            profile = user.userprofile
+            if getattr(profile, 'profile_picture', None):
+                profile.profile_picture.delete(save=False)
+        except Exception:
+            pass
+
+        logout(request)
+        user.delete()
+        messages.success(request, 'Your account has been deleted.')
+        return redirect('home')
+
+    return render(request, 'accounts/confirm_delete_account.html')
