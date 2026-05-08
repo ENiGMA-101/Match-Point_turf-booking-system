@@ -90,3 +90,11 @@ def delete_account(request):
         return redirect('home')
 
     return render(request, 'accounts/confirm_delete_account.html')
+
+
+def user_logout(request):
+    if request.user.is_authenticated:
+        username = request.user.username
+        logout(request)
+        messages.success(request, f'Goodbye {username}! You have been signed out successfully.')
+    return redirect('home')
