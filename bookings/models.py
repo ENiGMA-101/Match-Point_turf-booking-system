@@ -55,3 +55,51 @@ class TeamFormation(models.Model):
 
     class Meta:
         app_label = 'bookings'
+
+
+class JoinRequest(models.Model):
+    STATUS_CHOICES = (
+        ('Pending', 'Pending'),
+        ('Accepted', 'Accepted'),
+        ('Rejected', 'Rejected'),
+    )
+
+    team_formation = models.ForeignKey(TeamFormation, on_delete=models.CASCADE, related_name='join_requests')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} wants to join {self.team_formation.booking}"
+
+    class Meta:
+        app_label = 'bookings'
+
+
+class Payment(models.Model):
+    PAYMENT_METHODS = (
+        ('bkash', 'bKash'),
+        ('nagad', 'Nagad'),
+        ('upay', 'Upay'),
+    )
+
+    STATUS_CHOICES = (
+        ('Pending', 'Pending'),
+        ('Completed', 'Completed'),
+        ('Failed', 'Failed'),
+    )
+
+    booking = models.OneToOneField(Booking, on_delete=models.CASCADE, related_name='payment')
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
+    mobile_number = models.CharField(max_length=15)
+    transaction_id = models.CharField(max_length=50, unique=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00')) 
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Payment for {self.booking} - {self.transaction_id}"
+
+    class Meta:
+        app_label = 'bookings'
