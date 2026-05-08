@@ -331,3 +331,32 @@ def create_default_time_slots(field):
             end_time=end_time,
             is_available=True
         )
+
+@login_required
+def edit_field(request, field_id):
+    field = get_object_or_404(Field, id=field_id, owner=request.user)
+
+    if request.method == 'POST':
+        field_form = FieldForm(request.POST, request.FILES, instance=field)
+
+        if field_form.is_valid():
+            field_form.save()
+            messages.success(request, "Field updated successfully!")
+            return redirect('fields:manage_fields')
+    else:
+        field_form = FieldForm(instance=field)
+
+    return render(request, 'fields/edit_field.html', {'field_form': field_form, 'field': field})
+
+
+@login_required
+def manage_time_slots(request, field_id):
+    field = get_object_or_404(Field, id=field_id, owner=request.user)
+    time_slots = FieldTimeSlot.objects.filter(field=field).order_by('start_time')
+
+    context = {
+        'field': field,
+        'time_slots': time_slots,
+    }
+    return render(request, 'fields/manage_time_slots.html', context)
+
