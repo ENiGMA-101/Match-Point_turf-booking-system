@@ -39,3 +39,19 @@ class ReviewForm(forms.ModelForm):
                 'placeholder': 'Share your detailed experience...'
             }),
         }
+
+
+class ReviewImageForm(forms.ModelForm):
+    class Meta:
+        model = ReviewImage
+        fields = ['image', 'caption']
+        widgets = {
+            'image': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            }),
+            'caption': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Add a caption for this image...'
+            }),
+        }
