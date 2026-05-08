@@ -272,6 +272,7 @@ def manage_fields(request):
     owned_fields = Field.objects.filter(owner=request.user)
     return render(request, 'fields/manage_fields.html', {'owned_fields': owned_fields})
 
+
 @login_required
 def add_field(request):
     try:
@@ -309,6 +310,7 @@ def add_field(request):
 
     return render(request, 'fields/add_field.html', {'field_form': field_form})
 
+
 def create_default_time_slots(field):
     time_slots = [
         (time(6, 0), time(7, 30)),  # 6:00 AM - 7:30 AM
@@ -331,6 +333,7 @@ def create_default_time_slots(field):
             end_time=end_time,
             is_available=True
         )
+
 
 @login_required
 def edit_field(request, field_id):
@@ -469,3 +472,17 @@ def add_review(request, field_id):
     }
     return render(request, 'fields/add_review.html', context)
 
+
+@login_required
+def delete_review_image(request, image_id):
+    image = get_object_or_404(ReviewImage, id=image_id)
+
+    if image.review.user != request.user:
+        messages.error(request, "You can only delete your own review images.")
+        return redirect('fields:field_detail', field_id=image.review.field.id)
+
+    field_id = image.review.field.id
+    image.delete()
+    messages.success(request, "Image deleted successfully!")
+
+    return redirect('fields:add_review', field_id=field_id)
