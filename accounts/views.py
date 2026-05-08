@@ -44,3 +44,31 @@ def register(request):
         'user_form': user_form,
         'profile_form': profile_form
     })
+
+def user_login(request):
+    if request.user.is_authenticated:
+        messages.info(request, f'You are already logged in as {request.user.username}.')
+        return redirect('accounts:user_profile')
+    
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+        
+        if not username or not password:
+            messages.error(request, 'Please enter both username and password.')
+            return render(request, 'accounts/login.html')
+        
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                messages.success(request, f'Welcome back, {user.username}!')
+                
+                next_url = request.GET.get('next', 'home')
+                return redirect(next_url)
+            else:
+                messages.error(request, 'Your account is disabled. Please contact support.')
+        else:
+            messages.error(request, 'Invalid username or password. Please try again.')
+    
+    return render(request, 'accounts/login.html')
