@@ -185,3 +185,69 @@ def forgot_password(request):
         form = ForgotPasswordForm()
     
     return render(request, 'accounts/forgot_password.html', {'form': form})
+
+def reset_password(request):
+    if request.user.is_authenticated:
+        messages.info(request, 'You are already logged in.')
+        return redirect('accounts:user_profile')
+    
+    username = request.session.get('reset_username')
+    reset_time = request.session.get('reset_timestamp')
+    
+    if not username or not reset_time:
+        messages.error(request, 'Session expired. Please start the password recovery process again.')
+        return redirect('accounts:forgot_password')
+    
+    try:
+        reset_timestamp = timezone.datetime.fromisoformat(reset_time.replace('Z', '+00:00'))
+        if timezone.now() - reset_timestamp > timezone.timedelta(minutes=15):
+            request.session.pop('reset_username', None)
+            request.session.pop('reset_timestamp', None)
+            messages.error(request, 'Password reset session expired. Please try again.')
+            return redirect('accounts:forgot_password')
+    except:
+        messages.error(request, 'Invalid session. Please start over.')
+        return redirect('accounts:forgot_password')
+    
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        messages.error(request, 'User account not found.')
+        return redirect('accounts:forgot_password')
+    
+    if request.method == 'POST':
+        form = ResetPasswordForm(request.POST)
+        if form.is_valid():
+            new_password = form.cleaned_data['new_password']
+            
+            user.set_password(new_password)
+            user.save()
+            
+            user_profile, created = UserProfile.objects.get_or_create(
+                user=user,
+                defaults={
+                    'age': 18,
+                    'gender': 'Male',
+                    'mobile': '',
+                    'address': '',
+                    'emergency_contact': '',
+                    'is_field_owner': False
+                }
+            )
+            
+            request.session.pop('reset_username', None)
+            request.session.pop('reset_timestamp', None)
+            
+            messages.success(request, 'Password updated successfully! You can now sign in with your new password.')
+            return redirect('accounts:login')
+    else:
+        form = ResetPasswordForm(initial={
+            'username': username,
+            'email': user.email
+        })
+    
+    return render(request, 'accounts/reset_password.html', {
+        'form': form,
+        'user': user
+    })
+    
