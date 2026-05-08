@@ -53,3 +53,29 @@ class FieldTimeSlot(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
     is_available = models.BooleanField(default=True)
+
+
+class Review(models.Model):
+    def __str__(self):
+        return f"{self.user.username} - {self.field.name}"
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    field = models.ForeignKey(Field, on_delete=models.CASCADE)
+    rating = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)])
+    comment = models.TextField(max_length=1000, blank=True)
+    experience_title = models.CharField(max_length=200, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'field')
+
+
+class ReviewImage(models.Model):
+    def __str__(self):
+        return f"{self.review.user.username} - {self.review.field.name} - Image {self.id}"
+
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='review_images/')
+    caption = models.CharField(max_length=200, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
