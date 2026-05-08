@@ -9,7 +9,6 @@ from .models import Booking, TeamFormation, JoinRequest, Payment
 from .forms import BookingForm, TeamFormationForm
 from .payment_service import payment_service
 
-
 @login_required
 def my_bookings(request):
     bookings = Booking.objects.filter(user=request.user).order_by('-created_at')
