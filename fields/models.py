@@ -1,0 +1,35 @@
+from django.db import models
+from django.contrib.auth.models import User
+from decimal import Decimal
+
+
+class Field(models.Model):
+    def __str__(self):
+        return self.name
+
+    FIELD_TYPES = (
+        ('Cricket', 'Cricket'),
+        ('Football', 'Football'),
+        ('Tennis', 'Tennis'),
+        ('Basketball', 'Basketball'),
+    )
+
+    AVAILABILITY = (
+        ('Free', 'Free'),
+        ('Paid', 'Paid'),
+    )
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    field_type = models.CharField(max_length=20, choices=FIELD_TYPES)
+    location = models.CharField(max_length=300)
+    cost_per_hour = models.DecimalField(max_digits=10, decimal_places=2)
+    availability_type = models.CharField(max_length=10, choices=AVAILABILITY)
+    description = models.TextField(max_length=1000)
+    image = models.ImageField(upload_to='fields/', blank=True, null=True)
+    is_women_only = models.BooleanField(default=False)
+    capacity = models.PositiveIntegerField()
+    amenities = models.TextField(max_length=500, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+  
