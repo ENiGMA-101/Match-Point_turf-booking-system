@@ -165,3 +165,23 @@ def user_profile(request):
     }
     
     return render(request, 'accounts/user_profile.html', context)
+
+def forgot_password(request):
+    if request.user.is_authenticated:
+        messages.info(request, 'You are already logged in. You can change your password in your profile.')
+        return redirect('accounts:user_profile')
+    
+    if request.method == 'POST':
+        form = ForgotPasswordForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            
+            request.session['reset_username'] = username
+            request.session['reset_timestamp'] = timezone.now().isoformat()
+            
+            messages.success(request, f'Account found! You can now set a new password for {username}.')
+            return redirect('accounts:reset_password')
+    else:
+        form = ForgotPasswordForm()
+    
+    return render(request, 'accounts/forgot_password.html', {'form': form})
