@@ -85,3 +85,33 @@ def book_field(request, field_id):
         'max_date': max_date,
     }
     return render(request, 'bookings/book_field.html', context)
+
+
+@login_required
+def process_payment(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+
+    if booking.field.availability_type == 'Free':
+        messages.info(request, "This is a free field, no payment required.")
+        return redirect('bookings:booking_detail', booking_id=booking.id)
+
+    if request.method == 'POST':
+        payment_method = request.POST.get('payment_method')
+        mobile = request.POST.get('mobile')
+        pin = request.POST.get('pin')
+
+        result = payment_service.process_payment(booking, payment_method, mobile, pin)
+
+        if result['success']:
+            messages.success(request, "Payment completed successfully!")
+            context = {
+                'booking': booking,
+                'transaction_id': result['transaction_id'],
+                'payment_method': result['payment_method'],
+                'amount': result['amount']
+            }
+            return render(request, 'bookings/payment_success.html', context)
+        else:
+            messages.error(request, result['message'])
+
+    return render(request, 'bookings/process_payment.html', {'booking': booking})
