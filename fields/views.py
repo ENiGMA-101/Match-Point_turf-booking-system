@@ -176,3 +176,17 @@ def add_review(request, field_id):
     }
     return render(request, 'fields/add_review.html', context)
 
+
+@login_required
+def delete_review_image(request, image_id):
+    image = get_object_or_404(ReviewImage, id=image_id)
+
+    if image.review.user != request.user:
+        messages.error(request, "You can only delete your own review images.")
+        return redirect('fields:field_detail', field_id=image.review.field.id)
+
+    field_id = image.review.field.id
+    image.delete()
+    messages.success(request, "Image deleted successfully!")
+
+    return redirect('fields:add_review', field_id=field_id)
