@@ -309,3 +309,25 @@ def add_field(request):
 
     return render(request, 'fields/add_field.html', {'field_form': field_form})
 
+def create_default_time_slots(field):
+    time_slots = [
+        (time(6, 0), time(7, 30)),  # 6:00 AM - 7:30 AM
+        (time(7, 30), time(9, 0)),  # 7:30 AM - 9:00 AM
+        (time(9, 0), time(10, 30)),  # 9:00 AM - 10:30 AM
+        (time(10, 30), time(12, 0)),  # 10:30 AM - 12:00 PM
+        (time(12, 0), time(13, 30)),  # 12:00 PM - 1:30 PM
+        (time(13, 30), time(15, 0)),  # 1:30 PM - 3:00 PM
+        (time(15, 0), time(16, 30)),  # 3:00 PM - 4:30 PM
+        (time(16, 30), time(18, 0)),  # 4:30 PM - 6:00 PM
+        (time(18, 0), time(19, 30)),  # 6:00 PM - 7:30 PM
+        (time(19, 30), time(21, 0)),  # 7:30 PM - 9:00 PM
+        (time(21, 0), time(22, 30)),  # 9:00 PM - 10:30 PM
+    ]
+
+    for start_time, end_time in time_slots:
+        FieldTimeSlot.objects.create(
+            field=field,
+            start_time=start_time,
+            end_time=end_time,
+            is_available=True
+        )
