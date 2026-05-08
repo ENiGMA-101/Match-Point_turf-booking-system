@@ -98,3 +98,70 @@ def user_logout(request):
         logout(request)
         messages.success(request, f'Goodbye {username}! You have been signed out successfully.')
     return redirect('home')
+
+@login_required
+def user_profile(request):
+    user_profile, created = UserProfile.objects.get_or_create(
+        user=request.user,
+        defaults={
+            'age': 18,
+            'gender': 'Male',
+            'mobile': '',
+            'address': '',
+            'emergency_contact': '',
+            'is_field_owner': False
+        }
+    )
+    
+    if request.method == 'POST':
+        if 'delete_account' in request.POST:
+            username = request.user.username
+            request.user.delete()
+            messages.success(request, f'Account {username} deleted successfully.')
+            return redirect('home')
+        
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
+        
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            
+            profile = profile_form.save(commit=False)
+            if not profile.age:
+                profile.age = 18
+            if not profile.gender:
+                profile.gender = 'Male'
+            profile.save()
+            
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('accounts:user_profile')
+        else:
+            messages.error(request, 'Please fix the errors below.')
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = UserProfileForm(instance=user_profile)
+    
+    bookings = []
+    try:
+        from bookings.models import Booking
+        bookings = Booking.objects.filter(user=request.user).order_by('-created_at')
+    except ImportError:
+        pass
+    owned_fields = []
+    if user_profile.is_field_owner:
+        try:
+            from fields.models import Field
+            owned_fields = Field.objects.filter(owner=request.user)
+        except ImportError:
+            pass
+    
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'user_profile': user_profile,
+        'bookings': bookings,
+        'owned_fields': owned_fields,
+        'today': timezone.now().date(),
+    }
+    
+    return render(request, 'accounts/user_profile.html', context)
