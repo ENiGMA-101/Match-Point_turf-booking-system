@@ -250,4 +250,9 @@ def reset_password(request):
         'form': form,
         'user': user
     })
-    
+
+def cancel_password_reset(request):
+    request.session.pop('reset_username', None)
+    request.session.pop('reset_timestamp', None)
+    messages.info(request, 'Password reset cancelled.')
+    return redirect('accounts:login')
