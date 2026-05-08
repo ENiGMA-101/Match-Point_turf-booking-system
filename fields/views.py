@@ -206,3 +206,60 @@ def delete_review(request, field_id):
 
     return render(request, 'fields/confirm_delete_review.html', {'field': field})
 
+
+
+
+def field_detail(request, field_id):
+    field = get_object_or_404(Field, id=field_id, is_active=True)
+    time_slots = FieldTimeSlot.objects.filter(field=field, is_available=True)
+    reviews = Review.objects.filter(field=field).order_by('-created_at')
+    avg_rating = reviews.aggregate(Avg('rating'))['rating__avg']
+
+    today = date.today()
+    available_dates = []
+
+    for i in range(8):
+        check_date = today + timedelta(days=i)
+
+        booked_slots = set()
+        try:
+            bookings = Booking.objects.filter(
+                field=field,
+                booking_date=check_date,
+                status__in=['Confirmed', 'Pending']
+            ).values_list('time_slot_id', flat=True)
+            booked_slots.update(bookings)
+        except ImportError:
+            pass
+
+        total_slots = time_slots.count()
+        available_slots = total_slots - len(booked_slots)
+
+        available_dates.append({
+            'date': check_date,
+            'available_slots': available_slots,
+            'total_slots': total_slots,
+            'is_fully_booked': available_slots == 0
+        })
+
+    team_formations = []
+    try:
+        team_formations = TeamFormation.objects.filter(
+            booking__field=field,
+            looking_for_players=True,
+            booking__booking_date__gte=date.today(),
+            booking__status='Confirmed'
+        )
+    except ImportError:
+        pass
+
+    context = {
+        'field': field,
+        'time_slots': time_slots,
+        'reviews': reviews,
+        'avg_rating': avg_rating,
+        'team_formations': team_formations,
+        'available_dates': available_dates,
+        'today': today,
+    }
+    return render(request, 'fields/field_detail.html', context)
