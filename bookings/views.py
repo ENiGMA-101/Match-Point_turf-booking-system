@@ -186,3 +186,9 @@ def manage_join_requests(request, team_id):
             messages.info(request, f"{join_request.user.username}'s request has been rejected.")
 
         return redirect('bookings:manage_join_requests', team_id=team_id)
+
+    context = {
+        'team_formation': team_formation,
+        'join_requests': join_requests,
+    }
+    return render(request, 'bookings/manage_join_requests.html', context)
