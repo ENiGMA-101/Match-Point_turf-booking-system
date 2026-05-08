@@ -43,3 +43,13 @@ class Field(models.Model):
         """Get formatted cost for display"""
         cost = self.get_90min_cost()
         return f"${cost:.2f}"
+
+
+class FieldTimeSlot(models.Model):
+    def __str__(self):
+        return f"{self.field.name} - {self.start_time} to {self.end_time}"
+
+    field = models.ForeignKey(Field, on_delete=models.CASCADE)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    is_available = models.BooleanField(default=True)
