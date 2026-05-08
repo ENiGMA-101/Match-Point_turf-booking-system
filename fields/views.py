@@ -190,3 +190,19 @@ def delete_review_image(request, image_id):
     messages.success(request, "Image deleted successfully!")
 
     return redirect('fields:add_review', field_id=field_id)
+
+@login_required
+def delete_review(request, field_id):
+    field = get_object_or_404(Field, id=field_id)
+    review = Review.objects.filter(user=request.user, field=field).first()
+    if not review:
+        messages.info(request, 'No review to delete.')
+        return redirect('fields:field_detail', field_id=field.id)
+
+    if request.method == 'POST':
+        review.delete()
+        messages.success(request, 'Review deleted successfully.')
+        return redirect('fields:field_detail', field_id=field.id)
+
+    return render(request, 'fields/confirm_delete_review.html', {'field': field})
+
