@@ -115,3 +115,51 @@ def process_payment(request, booking_id):
             messages.error(request, result['message'])
 
     return render(request, 'bookings/process_payment.html', {'booking': booking})
+
+
+@login_required
+def booking_detail(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    return render(request, 'bookings/booking_detail.html', {'booking': booking})
+
+
+@login_required
+def cancel_booking(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+
+    if booking.status == 'Confirmed':
+        booking.status = 'Cancelled'
+        booking.save()
+        messages.success(request, "Booking cancelled successfully!")
+    else:
+        messages.error(request, "Cannot cancel this booking.")
+
+    return redirect('bookings:my_bookings')
+
+
+@login_required
+def join_team(request, team_id):
+    team_formation = get_object_or_404(TeamFormation, id=team_id)
+
+    if request.method == 'POST':
+        message = request.POST.get('message', '')
+
+        # Check if already requested
+        existing_request = JoinRequest.objects.filter(
+            team_formation=team_formation,
+            user=request.user
+        ).first()
+
+        if existing_request:
+            messages.info(request, "You have already sent a join request for this team.")
+        else:
+            JoinRequest.objects.create(
+                team_formation=team_formation,
+                user=request.user,
+                message=message
+            )
+            messages.success(request, "Join request sent successfully!")
+
+        return redirect('fields:field_detail', field_id=team_formation.booking.field.id)
+
+    return render(request, 'bookings/join_team.html', {'team_formation': team_formation})
