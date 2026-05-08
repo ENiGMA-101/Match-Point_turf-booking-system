@@ -51,3 +51,37 @@ def book_field(request, field_id):
             if slot_id and int(slot_id) in booked_slots:
                 messages.error(request, "This time slot is no longer available.")
                 return redirect('bookings:book_field', field_id=field_id)
+
+            booking = booking_form.save(commit=False)
+            booking.user = request.user
+            booking.field = field
+            booking.save()
+
+            # Handle team formation
+            if team_form.is_valid() and team_form.cleaned_data.get('looking_for_players'):
+                team_formation = team_form.save(commit=False)
+                team_formation.booking = booking
+                team_formation.save()
+
+            # Redirect to payment or confirmation
+            if field.availability_type == 'Paid':
+                return redirect('bookings:process_payment', booking_id=booking.id)
+            else:
+                booking.status = 'Confirmed'
+                booking.save()
+                messages.success(request, "Free field booked successfully!")
+                return redirect('bookings:booking_detail', booking_id=booking.id)
+    else:
+        booking_form = BookingForm()
+        team_form = TeamFormationForm()
+
+    context = {
+        'field': field,
+        'booking_form': booking_form,
+        'team_form': team_form,
+        'time_slots_with_status': time_slots_with_status,
+        'selected_date': selected_date,
+        'today': today,
+        'max_date': max_date,
+    }
+    return render(request, 'bookings/book_field.html', context)
