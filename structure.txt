@@ -1,0 +1,86 @@
+turf-booking-project/
+    ├── accounts/
+    │   ├── admin.py
+    │   ├── apps.py
+    │   ├── forms.py
+    │   ├── migrations/
+    │   ├── models.py
+    │   ├── templates/
+    │   │   └── accounts/
+    │   │       ├── confirm_delete_account.html
+    │   │       ├── forgot_password.html
+    │   │       ├── login.html
+    │   │       ├── register.html
+    │   │       ├── reset_password.html
+    │   │       └── user_profile.html
+    │   ├── urls.py
+    │   ├── views.py
+    │   ├── __init__.py
+    ├── bookings/
+    │   ├── admin.py
+    │   ├── apps.py
+    │   ├── forms.py
+    │   ├── migrations/
+    │   ├── models.py
+    │   ├── payment_service.py
+    │   ├── templates/
+    │   │   └── bookings/
+    │   │       ├── booking_detail.html
+    │   │       ├── book_field.html
+    │   │       ├── join_team.html
+    │   │       ├── manage_join_requests.html
+    │   │       ├── my_bookings.html
+    │   │       ├── payment_success.html
+    │   │       └── process_payment.html
+    │   ├── urls.py
+    │   ├── views.py
+    │   ├── __init__.py
+    ├── db.sqlite3
+    ├── fields/
+    │   ├── admin.py
+    │   ├── apps.py
+    │   ├── forms.py
+    │   ├── management/
+    │   │   ├── commands/
+    │   │   │   ├── create_default_slots.py
+    │   │   │   ├── create_timeslots.py
+    │   │   │   ├── make_field_owner.py
+    │   │   │   └── __init__.py
+    │   │   ├── __init__.py
+    │   ├── migrations/
+    │   ├── models.py
+    │   ├── templates/
+    │   │   └── fields/
+    │   │       ├── add_field.html
+    │   │       ├── add_review.html
+    │   │       ├── advanced_search.html
+    │   │       ├── confirm_delete_field.html
+    │   │       ├── confirm_delete_review.html
+    │   │       ├── edit_field.html
+    │   │       ├── fields.html
+    │   │       ├── field_detail.html
+    │   │       ├── manage_fields.html
+    │   │       └── manage_time_slots.html
+    │   ├── urls.py
+    │   ├── views.py
+    │   ├── __init__.py
+    ├── manage.py
+    ├── media/
+    │   ├── fields/
+    │   ├── profiles/
+    │   └── review_images/
+    ├── newProject/
+    │   ├── asgi.py
+    │   ├── settings.py
+    │   ├── urls.py
+    │   ├── wsgi.py
+    │   ├── __init__.py
+    ├── requirements.txt
+    ├── static/
+    │   └── css/
+    │       ├── profile.css
+    │       └── style.css
+    ├── structure.txt
+    ├── templates/
+    │   ├── base.html
+    │   └── home.html
