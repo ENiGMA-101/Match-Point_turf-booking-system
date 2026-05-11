@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📅 My Bookings</h2>
+    <a href="{% url 'fields:fields' %}" class="btn btn-primary">+ New Booking</a>
+</div>
+
+<div class="row">
+    {% for booking in bookings %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between">
+                    <h5>{{ booking.field.name }}</h5>
+                    <span class="booking-status status-{{ booking.status|lower }}">
+                        {{ booking.status }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <p><strong>📍 Location:</strong> {{ booking.field.location }}</p>
+                    <p><strong>📅 Date:</strong> {{ booking.booking_date }}</p>
+                    <p><strong>🕐 Time:</strong> {{ booking.time_slot.start_time }} - {{ booking.time_slot.end_time }}</p>
+                    <p><strong>👥 Players:</strong> {{ booking.players_count }}</p>
+                    <p><strong>💰 Cost:</strong> ${{ booking.total_cost }}</p>
+                    
+                    {% if booking.emergency_contact_visible %}
+                        <span class="badge bg-info">Emergency Contact Visible</span>
+                    {% endif %}
+                    
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="{% url 'bookings:booking_detail' booking.id %}" class="btn btn-info btn-sm">View Details</a>
+                        {% if booking.status == 'Confirmed' %}
+                            <a href="{% url 'bookings:cancel_booking' booking.id %}" 
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Are you sure you want to cancel this booking?')">
+                                Cancel
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="text-center">
+                <h4>No bookings found</h4>
+                <p>You haven't made any bookings yet.</p>
+                <a href="{% url 'fields:fields' %}" class="btn btn-primary">Browse Fields</a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
