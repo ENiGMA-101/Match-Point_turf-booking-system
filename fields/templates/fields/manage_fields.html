@@ -72,3 +72,22 @@
         </div>
     {% endfor %}
 </div>
+
+<script>
+function showTimeSlots(fieldId) {
+    const timeSlotsDiv = document.getElementById('timeSlots' + fieldId);
+    if (timeSlotsDiv.style.display === 'none') {
+        timeSlotsDiv.style.display = 'block';
+    } else {
+        timeSlotsDiv.style.display = 'none';
+    }
+}
+
+function confirmDelete(fieldId) {
+    if (confirm('Are you sure you want to delete this field? This action cannot be undone.')) {
+        // Here you would implement the delete functionality
+        alert('Delete functionality would be implemented here');
+    }
+}
+</script>
+{% endblock %}
