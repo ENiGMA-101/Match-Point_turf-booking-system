@@ -45,3 +45,30 @@
                         <a href="{% url 'fields:manage_time_slots' field.id %}" class="btn btn-warning btn-sm">🕐 Time Slots</a>
                         <a href="{% url 'fields:delete_field' field.id %}" class="btn btn-danger btn-sm">🗑️ Delete</a>
                     </div>
+                    
+                    <!-- Time Slots Quick View -->
+                    <div id="timeSlots{{ field.id }}" class="mt-3" style="display: none;">
+                        <h6>Available Time Slots:</h6>
+                        <div class="row">
+                            {% for slot in field.fieldtimeslot_set.all %}
+                                <div class="col-6 mb-1">
+                                    <small class="badge {% if slot.is_available %}bg-success{% else %}bg-secondary{% endif %}">
+                                        {{ slot.start_time|time:"H:i" }}-{{ slot.end_time|time:"H:i" }}
+                                    </small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="text-center">
+                <h4>No fields found</h4>
+                <p>You haven't added any fields yet.</p>
+                <a href="{% url 'fields:add_field' %}" class="btn btn-success">Add Your First Field</a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
