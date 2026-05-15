@@ -202,3 +202,48 @@ function previewImages(input) {
     }
 }
 </script>
+
+<style>
+.image-upload-section {
+    border: 2px dashed #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.image-upload-section:hover {
+    border-color: #4facfe;
+    background-color: #f8f9fc;
+}
+
+.star {
+    font-size: 1.5rem;
+    margin-right: 5px;
+}
+
+.star.filled {
+    color: #ffd700;
+}
+
+.star.empty {
+    color: #ddd;
+}
+
+#image-preview-container .card {
+    transition: all 0.3s ease;
+}
+
+#image-preview-container .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.existing-images .card {
+    transition: all 0.3s ease;
+}
+
+.existing-images .card:hover {
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}
