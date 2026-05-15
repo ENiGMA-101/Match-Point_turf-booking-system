@@ -132,3 +132,26 @@
             </div>
         </div>
     </div>
+
+    <div class="col-md-9">
+        <!-- Search Results -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3>Search Results ({{ fields.count }} fields found)</h3>
+            <div class="btn-group">
+                <button class="btn btn-outline-primary active" onclick="toggleView('grid')" id="gridBtn">
+                    <i class="fas fa-th"></i> Grid
+                </button>
+                <button 
+        <div id="fieldsContainer" class="row">
+            {% for field in fields %}
+                <div class="col-md-6 mb-4 field-card-container">
+                    <div class="card h-100 field-card">
+                        {% if field.image %}
+                            <img src="{{ field.image.url }}" class="card-img-top" alt="{{ field.name }}" 
+                                 style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" 
+                                 style="height: 200px;">
+                                <span class="text-white fs-1">🏟️</span>
+                            </div>
+                        {% endif %}
