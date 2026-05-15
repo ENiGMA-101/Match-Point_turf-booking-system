@@ -78,3 +78,20 @@
                         <input type="number" name="capacity" class="form-control" 
                                placeholder="Number of players" value="{{ current_filters.capacity }}">
                     </div>
+
+                    <!-- Amenities -->
+                    <div class="mb-3">
+                        <label class="form-label">Amenities</label>
+                        <input type="text" name="amenities" class="form-control" 
+                               placeholder="Parking, changing rooms..." value="{{ current_filters.amenities }}">
+                    </div>
+
+                    <!-- Date/Time Availability -->
+                    <div class="mb-3">
+                        <label class="form-label">Check Availability</label>
+                        <input type="date" name="available_date" class="form-control mb-2" 
+                               value="{{ current_filters.available_date }}"
+                               min="{{ today|date:'Y-m-d' }}">
+                        <input type="time" name="available_time" class="form-control" 
+                               value="{{ current_filters.available_time }}">
+                    </div>
