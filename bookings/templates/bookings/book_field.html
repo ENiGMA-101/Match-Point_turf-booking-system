@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% block title %}Book {{ field.name }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h3>📅 Book {{ field.name }}</h3>
+                <p class="mb-0">{{ field.location }} • ${{ field.cost_per_hour }}/hour • 90-minute slots</p>
+                <small class="text-muted">You can book up to 7 days in advance</small>
+            </div>
+            <div class="card-body">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>📅 Select Date to View Available Slots</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="get" class="d-flex gap-3 align-items-end">
+                            <div class="flex-grow-1">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" name="date" id="date" class="form-control"
+                                       value="{{ selected_date }}"
+                                       min="{{ today|date:'Y-m-d' }}"
+                                       max="{{ max_date|date:'Y-m-d' }}">
+                            </div>
+                            <button type="submit" class="btn btn-info">Check Availability</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>🕐 Available Time Slots for {{ selected_date }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for slot_info in time_slots_with_status %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="card time-slot-card {% if slot_info.is_booked %}border-danger bg-light{% else %}border-success{% endif %}">
+                                        <div class="card-body text-center p-2">
+                                            <h6 class="mb-1">{{ slot_info.slot.start_time|time:"H:i" }} - {{ slot_info.slot.end_time|time:"H:i" }}</h6>
+                                            <span class="badge {% if slot_info.is_booked %}bg-danger{% else %}bg-success{% endif %}">
+                                                {% if slot_info.is_booked %}🚫 BOOKED{% else %}✅ Available{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <form method="post" id="bookingForm">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="booking_date" class="form-label">📅 Booking Date</label>
+                                {{ booking_form.booking_date }}
+                                <small class="form-text text-muted">
+                                    You can book from {{ today|date:"M d, Y" }} to {{ max_date|date:"M d, Y" }}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="time_slot" class="form-label">🕐 Time Slot (90 minutes)</label>
+                                <select name="time_slot" class="form-control" required>
+                                    <option value="">Select Time Slot</option>
+                                    {% for slot_info in time_slots_with_status %}
+                                        <option value="{{ slot_info.slot.id }}"
+                                                {% if slot_info.is_booked %}disabled style="color: #dc3545;"{% endif %}>
+                                            {{ slot_info.slot.start_time|time:"H:i" }} - {{ slot_info.slot.end_time|time:"H:i" }}
+                                            {% if slot_info.is_booked %} (BOOKED){% endif %}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="players_count" class="form-label">👥 Number of Players</label>
+                                {{ booking_form.players_count }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3 form-check" style="margin-top: 35px;">
+                                {{ booking_form.emergency_contact_visible }}
+                                <label class="form-check-label" for="{{ booking_form.emergency_contact_visible.id_for_label }}">
+                                    📞 Show emergency contact to other players
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="special_requirements" class="form-label">📝 Special Requirements</label>
+                        {{ booking_form.special_requirements }}
+                    </div>
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>👥 Team Formation (Optional)</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-check mb-3">
+                                {{ team_form.looking_for_players }}
+                                <label class="form-check-label" for="{{ team_form.looking_for_players.id_for_label }}">
+                                    🔍 I'm looking for players to join my team
+                                </label>
+                            </div>
+                            <div id="teamFormationFields" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="required_players" class="form-label">👥 Players Needed</label>
+                                            {{ team_form.required_players }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="skill_level" class="form-label">🏆 Skill Level</label>
+                                            {{ team_form.skill_level }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">📝 Team Description</label>
+                                    {{ team_form.description }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>💰 Booking Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Field:</strong> {{ field.name }}</p>
+                                    <p><strong>Type:</strong> {{ field.field_type }}</p>
+                                    <p><strong>Location:</strong> {{ field.location }}</p>
+                                    <p><strong>Capacity:</strong> {{ field.capacity }} players</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Cost per hour:</strong> ${{ field.cost_per_hour }}</p>
+                                    <p><strong>Duration:</strong> 90 minutes (1.5 hours)</p>
+                                    {% if field.availability_type == 'Free' %}
+                                        <p><strong>Total Cost:</strong> <span class="badge bg-success">FREE</span></p>
+                                    {% else %}
+                                        <p><strong>Total Cost:</strong> <span class="badge bg-primary">${{ field.get_90min_cost }}</span></p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            🎯 Confirm Booking
+                            {% if field.availability_type == 'Paid' %}
+                                (${{ field.get_90min_cost }})
+                            {% else %}
+                                (FREE)
+                            {% endif %}
+                        </button>
+                        <a href="{% url 'fields:field_detail' field.id %}" class="btn btn-secondary">
+                            ← Back to Field Details
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const lookingForPlayersCheckbox = document.querySelector('#{{ team_form.looking_for_players.id_for_label }}');
+    const teamFormationFields = document.getElementById('teamFormationFields');
+    if (lookingForPlayersCheckbox) {
+        lookingForPlayersCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                teamFormationFields.style.display = 'block';
+            } else {
+                teamFormationFields.style.display = 'none';
+            }
+        });
+    }
+    const dateInput = document.querySelector('input[name="booking_date"]');
+    if (dateInput) {
+        const today = '{{ today|date:"Y-m-d" }}';
+        const maxDate = '{{ max_date|date:"Y-m-d" }}';
+        dateInput.setAttribute('min', today);
+        dateInput.setAttribute('max', maxDate);
+    }
+    const previewDateInput = document.getElementById('date');
+    if (previewDateInput) {
+        previewDateInput.addEventListener('change', function() {
+            if (dateInput) {
+                dateInput.value = this.value;
+            }
+        });
+    }
+    document.getElementById('bookingForm').addEventListener('submit', function(e) {
+        const selectedSlot = document.querySelector('select[name="time_slot"]').value;
+        if (!selectedSlot) {
+            e.preventDefault();
+            alert('Please select a time slot.');
+            return false;
+        }
+        const submitBtn = document.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+    });
+});
+</script>
+<style>
+.time-slot-card {
+    transition: all 0.3s ease;
+}
+
+.time-slot-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}
