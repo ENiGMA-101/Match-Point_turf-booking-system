@@ -143,3 +143,53 @@ document.addEventListener('DOMContentLoaded', function() {
         updateStarDisplay();
     }
 });
+
+function previewImages(input) {
+    const previewContainer = document.getElementById('image-previews');
+    const captionInputs = document.getElementById('caption-inputs');
+    const captionFields = document.getElementById('caption-fields');
+    
+    // Clear previous previews and captions
+    previewContainer.innerHTML = '';
+    captionFields.innerHTML = '';
+    
+    if (input.files && input.files.length > 0) {
+        captionInputs.style.display = 'block';
+        
+        // Limit to 5 images
+        const filesToProcess = Array.from(input.files).slice(0, 5);
+        
+        filesToProcess.forEach((file, index) => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    // Create image preview
+                    const colDiv = document.createElement('div');
+                    colDiv.className = 'col-md-4 mb-3';
+                    
+                    colDiv.innerHTML = `
+                        <div class="card">
+                            <img src="${e.target.result}" class="card-img-top" alt="Preview" 
+                                 style="height: 150px; object-fit: cover;">
+                            <div class="card-body p-2">
+                                <small class="text-muted">Image ${index + 1}</small>
+                            </div>
+                        </div>
+                    `;
+                    
+                    previewContainer.appendChild(colDiv);
+                };
+                
+                reader.readAsDataURL(file);
+                
+                // Create caption input
+                const captionDiv = document.createElement('div');
+                captionDiv.className = 'mb-2';
+                captionDiv.innerHTML = `
+                    <input type="text" name="image_captions" class="form-control" 
+                           placeholder="Caption for Image ${index + 1}..." maxlength="200">
+                `;
+                captionFields.appendChild(captionDiv);
+            }
+        });
