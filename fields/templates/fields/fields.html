@@ -248,3 +248,48 @@
         {% endfor %}
     </div>
 </div>
+
+<!-- Live Search Results (for AJAX) -->
+<div id="liveResults" style="display: none;"></div>
+
+<script>
+// Advanced filters toggle
+function toggleAdvancedFilters() {
+    const advancedFilters = document.getElementById('advancedFilters');
+    const toggleText = document.getElementById('advancedToggleText');
+    
+    if (advancedFilters.style.display === 'none') {
+        advancedFilters.style.display = 'block';
+        toggleText.textContent = 'Hide Advanced Filters';
+    } else {
+        advancedFilters.style.display = 'none';
+        toggleText.textContent = 'Advanced Filters';
+    }
+}
+
+// View switching
+function switchView(viewType) {
+    const gridBtn = document.getElementById('gridViewBtn');
+    const listBtn = document.getElementById('listViewBtn');
+    const fieldsGrid = document.getElementById('fieldsGrid');
+    
+    if (viewType === 'list') {
+        gridBtn.classList.remove('active');
+        listBtn.classList.add('active');
+        fieldsGrid.className = 'list-view';
+        
+        // Update field items for list view
+        document.querySelectorAll('.field-item').forEach(item => {
+            item.className = 'col-12 mb-3 field-item';
+        });
+    } else {
+        listBtn.classList.remove('active');
+        gridBtn.classList.add('active');
+        fieldsGrid.className = 'row';
+        
+        // Update field items for grid view
+        document.querySelectorAll('.field-item').forEach(item => {
+            item.className = 'col-md-4 mb-4 field-item';
+        });
+    }
+}
