@@ -193,3 +193,11 @@ function previewImages(input) {
                 captionFields.appendChild(captionDiv);
             }
         });
+        
+        if (filesToProcess.length > 5) {
+            alert('Only the first 5 images will be uploaded.');
+        }
+    } else {
+        captionInputs.style.display = 'none';
+    }
+}
