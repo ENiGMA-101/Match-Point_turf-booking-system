@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Fields{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>🏟️ Manage My Fields</h2>
+    <a href="{% url 'fields:add_field' %}" class="btn btn-success">
+        ➕ Add New Field
+    </a>
+</div>
+
+<div class="row">
+    {% for field in owned_fields %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                {% if field.image %}
+                    <img src="{{ field.image.url }}" class="card-img-top" alt="{{ field.name }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <span class="text-white fs-1">🏟️</span>
+                    </div>
