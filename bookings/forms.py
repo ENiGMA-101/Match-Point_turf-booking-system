@@ -1,267 +1,50 @@
-{% extends 'base.html' %}
+from django import forms
+from .models import Booking, TeamFormation
 
-{% block title %}Advanced Search - Fields{% endblock %}
 
-{% block content %}
-<div class="row">
-    <div class="colclass="btn btn-outline-primary" onclick="toggleView('list')" id="listBtn">
-                    <i class="fas fa-list"></i> List
-                </button>
-            </div>
-        </div>
--md-3">
-        <!-- Advanced Filter Sidebar -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5><i class="fas fa-filter me-2"></i>Advanced Filters</h5>
-            </div>
-            <div class="card-body">
-                <form method="get" id="advancedSearchForm">
-                    <!-- Basic Filters -->
-                    <div class="mb-3">
-                        <label class="form-label">Field Type</label>
-                        <select name="field_type" class="form-control">
-                            <option value="">All Types</option>
-                            {% for type in field_types %}
-                                <option value="{{ type.0 }}" {% if current_filters.field_type == type.0 %}selected{% endif %}>
-                                    {{ type.1 }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
+class BookingForm(forms.ModelForm):
+    class Meta:
+        model = Booking
+        fields = ['booking_date', 'time_slot', 'players_count', 'special_requirements', 'emergency_contact_visible']
+        widgets = {
+            'booking_date': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-control'
+            }),
+            'time_slot': forms.Select(attrs={'class': 'form-control'}),
+            'players_count': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 1,
+                'max': 50
+            }),
+            'special_requirements': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Any special requirements...'
+            }),
+            'emergency_contact_visible': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+        }
 
-                    <div class="mb-3">
-                        <label class="form-label">Availability</label>
-                        <select name="availability" class="form-control">
-                            <option value="">All</option>
-                            {% for avail in availability_types %}
-                                <option value="{{ avail.0 }}" {% if current_filters.availability == avail.0 %}selected{% endif %}>
-                                    {{ avail.1 }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Location</label>
-                        <input type="text" name="location" class="form-control" 
-                               placeholder="Search by location" value="{{ current_filters.location }}">
-                    </div>
-
-                    <!-- Price Range -->
-                    <div class="mb-3">
-                        <label class="form-label">Price Range (BDT/hour)</label>
-                        <div class="row">
-                            <div class="col-6">
-                                <input type="number" name="min_price" class="form-control" 
-                                       placeholder="Min" value="{{ current_filters.min_price }}">
-                            </div>
-                            <div class="col-6">
-                                <input type="number" name="max_price" class="form-control" 
-                                       placeholder="Max" value="{{ current_filters.max_price }}">
-                            </div>
-                        </div>
-                        <small class="text-muted">
-                            Range: {{ price_range.min_price|default:"0" }} - {{ price_range.max_price|default:"0" }} BDT
-                        </small>
-                    </div>
-
-                    <!-- Rating Filter -->
-                    <div class="mb-3">
-                        <label class="form-label">Minimum Rating</label>
-                        <select name="min_rating" class="form-control">
-                            <option value="">Any Rating</option>
-                            <option value="4" {% if current_filters.min_rating == "4" %}selected{% endif %}>4+ Stars</option>
-                            <option value="3" {% if current_filters.min_rating == "3" %}selected{% endif %}>3+ Stars</option>
-                            <option value="2" {% if current_filters.min_rating == "2" %}selected{% endif %}>2+ Stars</option>
-                        </select>
-                    </div>
-
-                    <!-- Capacity -->
-                    <div class="mb-3">
-                        <label class="form-label">Minimum Capacity</label>
-                        <input type="number" name="capacity" class="form-control" 
-                               placeholder="Number of players" value="{{ current_filters.capacity }}">
-                    </div>
-
-                    <!-- Amenities -->
-                    <div class="mb-3">
-                        <label class="form-label">Amenities</label>
-                        <input type="text" name="amenities" class="form-control" 
-                               placeholder="Parking, changing rooms..." value="{{ current_filters.amenities }}">
-                    </div>
-
-                    <!-- Date/Time Availability -->
-                    <div class="mb-3">
-                        <label class="form-label">Check Availability</label>
-                        <input type="date" name="available_date" class="form-control mb-2" 
-                               value="{{ current_filters.available_date }}"
-                               min="{{ today|date:'Y-m-d' }}">
-                        <input type="time" name="available_time" class="form-control" 
-                               value="{{ current_filters.available_time }}">
-                    </div>
-
-                    <!-- Women Only -->
-                    <div class="form-check mb-3">
-                        <input type="checkbox" name="women_only" class="form-check-input" 
-                               {% if current_filters.women_only %}checked{% endif %}>
-                        <label class="form-check-label">Women Only Fields</label>
-                    </div>
-
-                    <!-- Sort Options -->
-                    <div class="mb-3">
-                        <label class="form-label">Sort By</label>
-                        <select name="sort_by" class="form-control">
-                            <option value="name" {% if current_filters.sort_by == "name" %}selected{% endif %}>Name</option>
-                            <option value="price_low" {% if current_filters.sort_by == "price_low" %}selected{% endif %}>Price: Low to High</option>
-                            <option value="price_high" {% if current_filters.sort_by == "price_high" %}selected{% endif %}>Price: High to Low</option>
-                            <option value="rating" {% if current_filters.sort_by == "rating" %}selected{% endif %}>Rating</option>
-                            <option value="newest" {% if current_filters.sort_by == "newest" %}selected{% endif %}>Newest First</option>
-                        </select>
-                    </div>
-
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search me-2"></i>Search
-                        </button>
-                        <a href="{% url 'fields:advanced_search' %}" class="btn btn-secondary">
-                            <i class="fas fa-times me-2"></i>Clear Filters
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-9">
-        <!-- Search Results -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3>Search Results ({{ fields.count }} fields found)</h3>
-            <div class="btn-group">
-                <button class="btn btn-outline-primary active" onclick="toggleView('grid')" id="gridBtn">
-                    <i class="fas fa-th"></i> Grid
-                </button>
-                <button 
-        <div id="fieldsContainer" class="row">
-            {% for field in fields %}
-                <div class="col-md-6 mb-4 field-card-container">
-                    <div class="card h-100 field-card">
-                        {% if field.image %}
-                            <img src="{{ field.image.url }}" class="card-img-top" alt="{{ field.name }}" 
-                                 style="height: 200px; object-fit: cover;">
-                        {% else %}
-                            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" 
-                                 style="height: 200px;">
-                                <span class="text-white fs-1">🏟️</span>
-                            </div>
-                        {% endif %}
-                        
-                        <div class="card-body">
-                            <h5 class="card-title">{{ field.name }}</h5>
-                            <p class="card-text">
-                                <i class="fas fa-map-marker-alt me-1"></i> {{ field.location }}<br>
-                                <i class="fas fa-futbol me-1"></i> {{ field.field_type }}<br>
-                                <i class="fas fa-money-bill-wave me-1"></i> {{ field.cost_per_hour }} BDT/hour<br>
-                                <i class="fas fa-users me-1"></i> Up to {{ field.capacity }} players
-                            </p>
-                            
-                            <!-- Rating Display -->
-                            {% if field.avg_rating %}
-                                <div class="mb-2">
-                                    <span class="badge bg-warning">
-                                        <i class="fas fa-star"></i> {{ field.avg_rating|floatformat:1 }}
-                                    </span>
-                                </div>
-                            {% endif %}
-                            
-                            <!-- Badges -->
-                            <div class="mb-3">
-                                {% if field.availability_type == 'Free' %}
-                                    <span class="badge bg-success">FREE</span>
-                                {% else %}
-                                    <span class="badge bg-primary">PAID</span>
-                                {% endif %}
-                                
-                                {% if field.is_women_only %}
-                                    <span class="badge bg-pink">Women Only</span>
-                                {% endif %}
-                            </div>
-                            
-                            <div class="d-grid">
-                                <a href="{% url 'fields:field_detail' field.id %}" class="btn btn-primary">
-                                    <i class="fas fa-eye me-2"></i>View Details
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="col-12">
-                    <div class="text-center py-5">
-                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                        <h4>No fields found</h4>
-                        <p>Try adjusting your search criteria or check back later.</p>
-                        <a href="{% url 'fields:fields' %}" class="btn btn-primary">
-                            View All Fields
-                        </a>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Set minimum date to today
-    const dateInput = document.querySelector('input[name="available_date"]');
-    if (dateInput) {
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.setAttribute('min', today);
-    }
-});
-
-function toggleView(viewType) {
-    const container = document.getElementById('fieldsContainer');
-    const cards = container.querySelectorAll('.field-card-container');
-    const gridBtn = document.getElementById('gridBtn');
-    const listBtn = document.getElementById('listBtn');
-    
-    if (viewType === 'list') {
-        container.className = 'row';
-        cards.forEach(card => {
-            card.className = 'col-12 mb-3 field-card-container';
-        });
-        gridBtn.classList.remove('active');
-        listBtn.classList.add('active');
-    } else {
-        container.className = 'row';
-        cards.forEach(card => {
-            card.className = 'col-md-6 mb-4 field-card-container';
-        });
-        listBtn.classList.remove('active');
-        gridBtn.classList.add('active');
-    }
-}
-</script>
-
-<style>
-.field-card {
-    transition: all 0.3s ease;
-}
-
-.field-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.bg-pink {
-    background-color: #e91e63 !important;
-}
-
-.form-control:focus {
-    border-color: #4facfe;
-    box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
-}
-</style>
-{% endblock %}
+class TeamFormationForm(forms.ModelForm):
+    class Meta:
+        model = TeamFormation
+        fields = ['looking_for_players', 'required_players', 'skill_level', 'description']
+        widgets = {
+            'looking_for_players': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'required_players': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 1,
+                'max': 20
+            }),
+            'skill_level': forms.Select(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Describe your team and what you are looking for...'
+            }),
+        }
