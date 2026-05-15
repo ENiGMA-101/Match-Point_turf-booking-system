@@ -155,3 +155,22 @@
                                 <span class="text-white fs-1">🏟️</span>
                             </div>
                         {% endif %}
+                        
+                        <div class="card-body">
+                            <h5 class="card-title">{{ field.name }}</h5>
+                            <p class="card-text">
+                                <i class="fas fa-map-marker-alt me-1"></i> {{ field.location }}<br>
+                                <i class="fas fa-futbol me-1"></i> {{ field.field_type }}<br>
+                                <i class="fas fa-money-bill-wave me-1"></i> {{ field.cost_per_hour }} BDT/hour<br>
+                                <i class="fas fa-users me-1"></i> Up to {{ field.capacity }} players
+                            </p>
+                            
+                            <!-- Rating Display -->
+                            {% if field.avg_rating %}
+                                <div class="mb-2">
+                                    <span class="badge bg-warning">
+                                        <i class="fas fa-star"></i> {{ field.avg_rating|floatformat:1 }}
+                                    </span>
+                                </div>
+                            {% endif %}
+                            
