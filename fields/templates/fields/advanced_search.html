@@ -24,3 +24,15 @@
                             {% endfor %}
                         </select>
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Availability</label>
+                        <select name="availability" class="form-control">
+                            <option value="">All</option>
+                            {% for avail in availability_types %}
+                                <option value="{{ avail.0 }}" {% if current_filters.availability == avail.0 %}selected{% endif %}>
+                                    {{ avail.1 }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
