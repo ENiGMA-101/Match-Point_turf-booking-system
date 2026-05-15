@@ -210,3 +210,58 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set minimum date to today
+    const dateInput = document.querySelector('input[name="available_date"]');
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+    }
+});
+
+function toggleView(viewType) {
+    const container = document.getElementById('fieldsContainer');
+    const cards = container.querySelectorAll('.field-card-container');
+    const gridBtn = document.getElementById('gridBtn');
+    const listBtn = document.getElementById('listBtn');
+    
+    if (viewType === 'list') {
+        container.className = 'row';
+        cards.forEach(card => {
+            card.className = 'col-12 mb-3 field-card-container';
+        });
+        gridBtn.classList.remove('active');
+        listBtn.classList.add('active');
+    } else {
+        container.className = 'row';
+        cards.forEach(card => {
+            card.className = 'col-md-6 mb-4 field-card-container';
+        });
+        listBtn.classList.remove('active');
+        gridBtn.classList.add('active');
+    }
+}
+</script>
+
+<style>
+.field-card {
+    transition: all 0.3s ease;
+}
+
+.field-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.bg-pink {
+    background-color: #e91e63 !important;
+}
+
+.form-control:focus {
+    border-color: #4facfe;
+    box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+}
+</style>
+{% endblock %}
