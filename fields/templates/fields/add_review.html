@@ -63,3 +63,36 @@
                             <div id="image-preview-container" class="mt-3">
                                 <div class="row" id="image-previews"></div>
                             </div>
+
+                            <!-- Dynamic Caption Inputs -->
+                            <div id="caption-inputs" class="mt-3" style="display: none;">
+                                <label class="form-label">📝 Image Captions</label>
+                                <div id="caption-fields"></div>
+                            </div>
+
+                            <!-- Existing Images (Edit Mode) -->
+                            {% if existing_images %}
+                                <div class="existing-images mt-3">
+                                    <h6>Current Images:</h6>
+                                    <div class="row">
+                                        {% for image in existing_images %}
+                                            <div class="col-md-4 mb-3">
+                                                <div class="card">
+                                                    <img src="{{ image.image.url }}" class="card-img-top" alt="Review Image" 
+                                                         style="height: 150px; object-fit: cover;">
+                                                    <div class="card-body p-2">
+                                                        <small class="text-muted">{{ image.caption|default:"No caption" }}</small>
+                                                        <a href="{% url 'fields:delete_review_image' image.id %}" 
+                                                           class="btn btn-danger btn-sm mt-1 w-100"
+                                                           onclick="return confirm('Delete this image?')">
+                                                            🗑️ Delete
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
