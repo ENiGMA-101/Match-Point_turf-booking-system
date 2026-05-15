@@ -46,3 +46,23 @@
                         {% endfor %}
                     </select>
                 </div>
+                
+                <!-- Location Filter -->
+                <div class="col-md-2">
+                    <input type="text" name="location" class="form-control" 
+                           placeholder="Location" value="{{ request.GET.location }}">
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="col-md-2">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-fill">
+                            <i class="fas fa-search me-1"></i>Search
+                        </button>
+                        <a href="{% url 'fields:fields' %}" class="btn btn-outline-secondary" title="Clear">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
