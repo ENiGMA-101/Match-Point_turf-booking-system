@@ -114,3 +114,32 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ratingSelect = document.querySelector('select[name="rating"]');
+    const starDisplay = document.getElementById('star-display');
+    
+    // Update star display when rating changes
+    function updateStarDisplay() {
+        const rating = parseInt(ratingSelect.value);
+        let starsHtml = '';
+        
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                starsHtml += '<span class="star filled">⭐</span>';
+            } else {
+                starsHtml += '<span class="star empty">☆</span>';
+            }
+        }
+        
+        starDisplay.innerHTML = starsHtml;
+    }
+    
+    ratingSelect.addEventListener('change', updateStarDisplay);
+    
+    // Initial star display
+    if (ratingSelect.value) {
+        updateStarDisplay();
+    }
+});
