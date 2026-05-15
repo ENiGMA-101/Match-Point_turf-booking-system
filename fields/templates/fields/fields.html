@@ -9,7 +9,323 @@
 </div>
 
 <!-- Enhanced Search and Filter -->
+<div class="card search-filter-card mb-4">{% extends 'base.html' %}
+
+{% block title %}Browse Fields{% endblock %}
+
+{% block content %}
+<div class="search-header mb-4">
+    <h2>🏟️ Browse Sports Fields</h2>
+    <p class="text-muted">Find the perfect field for your game</p>
+</div>
+
+<!-- Enhanced Search and Filter -->
 <div class="card search-filter-card mb-4">
+    <div class="card-body">
+        <form method="get" class="search-form">
+            <div class="row g-3">
+                <!-- Quick Search -->
+                <div class="col-md-4">
+                    <div class="search-input-group">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" name="search" class="form-control search-input" 
+                               placeholder="Search fields, locations..." 
+                               value="{{ request.GET.search }}">
+                    </div>
+                </div>
+                
+                <!-- Field Type Filter -->
+                <div class="col-md-2">
+                    <select name="field_type" class="form-control">
+                        <option value="">All Sports</option>
+                        {% for type in field_types %}
+                            <option value="{{ type.0 }}" {% if request.GET.field_type == type.0 %}selected{% endif %}>
+                                {{ type.1 }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Availability Filter -->
+                <div class="col-md-2">
+                    <select name="availability" class="form-control">
+                        <option value="">Free & Paid</option>
+                        {% for avail in availability_types %}
+                            <option value="{{ avail.0 }}" {% if request.GET.availability == avail.0 %}selected{% endif %}>
+                                {{ avail.1 }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Location Filter -->
+                <div class="col-md-2">
+                    <input type="text" name="location" class="form-control" 
+                           placeholder="Location" value="{{ request.GET.location }}">
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="col-md-2">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-fill">
+                            <i class="fas fa-search me-1"></i>Search
+                        </button>
+                        <a href="{% url 'fields:fields' %}" class="btn btn-outline-secondary" title="Clear">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Advanced Filters Toggle -->
+            <div class="advanced-filters mt-3" id="advancedFilters" style="display: none;">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Price Range (৳/hour)</label>
+                        <div class="d-flex gap-2">
+                            <input type="number" name="min_price" class="form-control" 
+                                   placeholder="Min" value="{{ request.GET.min_price }}">
+                            <input type="number" name="max_price" class="form-control" 
+                                   placeholder="Max" value="{{ request.GET.max_price }}">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <label class="form-label">Min Capacity</label>
+                        <input type="number" name="capacity" class="form-control" 
+                               placeholder="Players" value="{{ request.GET.capacity }}">
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label class="form-label">Available Date</label>
+                        <input type="date" name="available_date" class="form-control" 
+                               value="{{ request.GET.available_date }}"
+                               min="{{ today|date:'Y-m-d' }}">
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <label class="form-label">Available Time</label>
+                        <input type="time" name="available_time" class="form-control" 
+                               value="{{ request.GET.available_time }}">
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <label class="form-label">Special</label>
+                        <div class="form-check">
+                            <input type="checkbox" name="women_only" class="form-check-input" 
+                                   {% if request.GET.women_only %}checked{% endif %}>
+                            <label class="form-check-label">Women Only</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-3">
+                <button type="button" class="btn btn-link" onclick="toggleAdvancedFilters()">
+                    <i class="fas fa-sliders-h me-1"></i>
+                    <span id="advancedToggleText">Advanced Filters</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results Summary -->
+<div class="results-summary mb-3">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <strong>{{ fields.count }}</strong> field{{ fields.count|pluralize }} found
+            {% if request.GET.search %}
+                for "<em>{{ request.GET.search }}</em>"
+            {% endif %}
+        </div>
+        <div class="view-toggles">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary btn-sm active" 
+                        onclick="switchView('grid')" id="gridViewBtn">
+                    <i class="fas fa-th"></i> Grid
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm" 
+                        onclick="switchView('list')" id="listViewBtn">
+                    <i class="fas fa-list"></i> List
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fields Grid -->
+<div class="fields-container" id="fieldsContainer">
+    <div class="row" id="fieldsGrid">
+        {% for field in fields %}
+            <div class="col-md-4 mb-4 field-item">
+                <div class="card field-card h-100">
+                    <!-- Field Image -->
+                    <div class="field-image-container">
+                        {% if field.image %}
+                            <img src="{{ field.image.url }}" class="card-img-top" alt="{{ field.name }}">
+                        {% else %}
+                            <div class="card-img-top field-placeholder">
+                                <i class="fas fa-futbol"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Quick Info Overlay -->
+                        <div class="field-overlay">
+                            <div class="quick-info">
+                                {% if field.availability_type == 'Free' %}
+                                    <span class="badge badge-free">FREE</span>
+                                {% else %}
+                                    <span class="badge badge-paid">৳{{ field.cost_per_hour }}/hr</span>
+                                {% endif %}
+                                {% if field.is_women_only %}
+                                    <span class="badge badge-women">Women Only</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">{{ field.name }}</h5>
+                        <div class="field-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-futbol text-primary"></i>
+                                <span>{{ field.field_type }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-map-marker-alt text-danger"></i>
+                                <span>{{ field.location }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-users text-success"></i>
+                                <span>Up to {{ field.capacity }} players</span>
+                            </div>
+                            {% if field.amenities %}
+                                <div class="meta-item">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <span>{{ field.amenities|truncatewords:3 }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Quick Stats -->
+                        <div class="quick-stats mt-2">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>90-min slots
+                                <i class="fas fa-calendar-alt ms-2 me-1"></i>Book 7 days ahead
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="price-display">
+                                {% if field.availability_type == 'Free' %}
+                                    <span class="price-free">FREE FIELD</span>
+                                {% else %}
+                                    <span class="price-amount">৳{{ field.get_90min_cost }}</span>
+                                    <small class="text-muted">/90min</small>
+                                {% endif %}
+                            </div>
+                            <div class="action-buttons">
+                                <a href="{% url 'fields:field_detail' field.id %}" 
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye me-1"></i>View
+                                </a>
+                                {% if user.is_authenticated %}
+                                    <a href="{% url 'bookings:book_field' field.id %}" 
+                                       class="btn btn-success btn-sm">
+                                        <i class="fas fa-calendar-plus me-1"></i>Book
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="no-results">
+                    <div class="text-center py-5">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h4>No fields found</h4>
+                        <p class="text-muted">Try adjusting your search criteria or browse all fields.</p>
+                        <a href="{% url 'fields:fields' %}" class="btn btn-primary">
+                            <i class="fas fa-refresh me-1"></i>Show All Fields
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Live Search Results (for AJAX) -->
+<div id="liveResults" style="display: none;"></div>
+
+<script>
+// Advanced filters toggle
+function toggleAdvancedFilters() {
+    const advancedFilters = document.getElementById('advancedFilters');
+    const toggleText = document.getElementById('advancedToggleText');
+    
+    if (advancedFilters.style.display === 'none') {
+        advancedFilters.style.display = 'block';
+        toggleText.textContent = 'Hide Advanced Filters';
+    } else {
+        advancedFilters.style.display = 'none';
+        toggleText.textContent = 'Advanced Filters';
+    }
+}
+
+// View switching
+function switchView(viewType) {
+    const gridBtn = document.getElementById('gridViewBtn');
+    const listBtn = document.getElementById('listViewBtn');
+    const fieldsGrid = document.getElementById('fieldsGrid');
+    
+    if (viewType === 'list') {
+        gridBtn.classList.remove('active');
+        listBtn.classList.add('active');
+        fieldsGrid.className = 'list-view';
+        
+        // Update field items for list view
+        document.querySelectorAll('.field-item').forEach(item => {
+            item.className = 'col-12 mb-3 field-item';
+        });
+    } else {
+        listBtn.classList.remove('active');
+        gridBtn.classList.add('active');
+        fieldsGrid.className = 'row';
+        
+        // Update field items for grid view
+        document.querySelectorAll('.field-item').forEach(item => {
+            item.className = 'col-md-4 mb-4 field-item';
+        });
+    }
+}
+
+// Live search functionality
+let searchTimeout;
+document.querySelector('input[name="search"]').addEventListener('input', function(e) {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        // You can implement live search here if needed
+        console.log('Searching for:', e.target.value);
+    }, 500);
+});
+
+// Auto-submit form on filter change
+document.querySelectorAll('select').forEach(select => {
+    select.addEventListener('change', function() {
+        if (this.name !== 'search') {
+            // Optional: Auto-submit on filter change
+            // this.closest('form').submit();
+        }
+    });
+});
+</script>
+
     <div class="card-body">
         <form method="get" class="search-form">
             <div class="row g-3">
