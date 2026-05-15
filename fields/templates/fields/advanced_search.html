@@ -196,3 +196,17 @@
                     </div>
                 </div>
             {% empty %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h4>No fields found</h4>
+                        <p>Try adjusting your search criteria or check back later.</p>
+                        <a href="{% url 'fields:fields' %}" class="btn btn-primary">
+                            View All Fields
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
