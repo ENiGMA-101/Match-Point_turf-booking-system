@@ -109,3 +109,36 @@
                 </div>
             </div>
             
+            <div class="text-center mt-3">
+                <button type="button" class="btn btn-link" onclick="toggleAdvancedFilters()">
+                    <i class="fas fa-sliders-h me-1"></i>
+                    <span id="advancedToggleText">Advanced Filters</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results Summary -->
+<div class="results-summary mb-3">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <strong>{{ fields.count }}</strong> field{{ fields.count|pluralize }} found
+            {% if request.GET.search %}
+                for "<em>{{ request.GET.search }}</em>"
+            {% endif %}
+        </div>
+        <div class="view-toggles">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary btn-sm active" 
+                        onclick="switchView('grid')" id="gridViewBtn">
+                    <i class="fas fa-th"></i> Grid
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm" 
+                        onclick="switchView('list')" id="listViewBtn">
+                    <i class="fas fa-list"></i> List
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
