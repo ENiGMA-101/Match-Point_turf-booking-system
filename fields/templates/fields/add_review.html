@@ -96,3 +96,21 @@
                             {% endif %}
                         </div>
                     </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            {% if existing_review %}
+                                💾 Update Review
+                            {% else %}
+                                ✨ Submit Review
+                            {% endif %}
+                        </button>
+                        <a href="{% url 'fields:field_detail' field.id %}" class="btn btn-secondary">
+                            ← Back to Field
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
