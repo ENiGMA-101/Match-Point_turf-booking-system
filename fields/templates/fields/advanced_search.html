@@ -95,3 +95,22 @@
                         <input type="time" name="available_time" class="form-control" 
                                value="{{ current_filters.available_time }}">
                     </div>
+
+                    <!-- Women Only -->
+                    <div class="form-check mb-3">
+                        <input type="checkbox" name="women_only" class="form-check-input" 
+                               {% if current_filters.women_only %}checked{% endif %}>
+                        <label class="form-check-label">Women Only Fields</label>
+                    </div>
+
+                    <!-- Sort Options -->
+                    <div class="mb-3">
+                        <label class="form-label">Sort By</label>
+                        <select name="sort_by" class="form-control">
+                            <option value="name" {% if current_filters.sort_by == "name" %}selected{% endif %}>Name</option>
+                            <option value="price_low" {% if current_filters.sort_by == "price_low" %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_high" {% if current_filters.sort_by == "price_high" %}selected{% endif %}>Price: High to Low</option>
+                            <option value="rating" {% if current_filters.sort_by == "rating" %}selected{% endif %}>Rating</option>
+                            <option value="newest" {% if current_filters.sort_by == "newest" %}selected{% endif %}>Newest First</option>
+                        </select>
+                    </div>
