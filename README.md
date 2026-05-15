@@ -2,233 +2,125 @@
 
 <div align="center">
 
-### "Feel the pitch, Track the game"
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![HTML](https://img.shields.io/badge/HTML-E34F26?logo=html5&logoColor=white)
+![Status](https://img.shields.io/badge/status-active-success.svg)
 
-A modern, user-friendly turf booking platform that revolutionizes how players find and reserve sports fields.
+**A modern web application for finding and booking sports arenas and fields**
 
-[Features](#-features) • [Demo](#-demo) • [Getting Started](#-getting-started) • [Team](#-team) • [Contributing](#contributing)
+[Demo](#-Screenshots) • [Features](#-features) • [Installation](#installation) • [Contributing](#-contributing)
 
 </div>
 
 ---
 
-## 📋 Introduction
+## 📋 Overview
 
-**MatchPOINT** is a comprehensive turf booking and management platform designed to bridge the gap between sports enthusiasts and turf field owners. We've eliminated the hassle of manual bookings by creating a centralized, digital-first solution that makes finding and reserving the perfect playing field effortless.
-
-Whether you're a casual player looking for a weekend cricket match or a football team planning your weekly practice, MatchPOINT has you covered.
-
----
+Arena Finder is a comprehensive platform designed to simplify the process of discovering and booking sports facilities. Whether you're looking for a football field, basketball court, or any other sports arena, our application connects users with available venues in their area.
 
 ## ✨ Features
 
-### For Players
-- 🔍 **Easy Search & Discovery** - Find turf fields based on location, sport type, and availability
-- 📅 **Real-Time Availability** - View available time slots and book instantly
-- 📍 **Detailed Turf Information** - Clear location maps, rental prices, and facility details
-- 🎯 **Special Amenities** - Filter by women-only fields, night lighting, parking, and other comfort features
-- 💾 **Booking Management** - View, modify, and track all your reservations in one place
-
-### For Turf Owners
-- 📊 **Business Management** - List and manage your fields efficiently
-- 📱 **Real-Time Bookings** - Receive instant booking notifications
-- 💰 **Flexible Pricing** - Set your own rates and time slots
-- ⭐ **Customer Reviews** - Build credibility with player ratings and feedback
-
-### Platform Highlights
-- ✅ **Modern & Organized** - Replaces outdated manual booking methods (calls, messages)
-- 🔒 **Secure & Reliable** - Safe payment processing and confirmed bookings
-- 🌍 **Unified Platform** - All turf owners and players on one ecosystem
-- ⚡ **Fast & Efficient** - Reduces confusion and saves time for everyone
-
----
-
-## 🎮 Demo
-
-_Coming Soon_ - Live demo link and screenshots will be added here
-
----
+- 🔍 **Smart Search** - Find arenas by location, sport type, and availability
+- 📅 **Easy Booking** - Streamlined reservation system for hassle-free bookings
+- 🗺️ **Interactive Maps** - Visual representation of nearby sports facilities
+- ⭐ **Reviews & Ratings** - Community-driven feedback for informed decisions
+- 📱 **Responsive Design** - Seamless experience across all devices
+- 💳 **Secure Payments** - Safe and reliable payment processing
+- 🔔 **Notifications** - Real-time updates on booking status
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js (v14 or higher)
-- npm or yarn
-- Git
+
+- A modern web browser (Chrome, Firefox, Safari, Edge)
+- Basic knowledge of HTML/CSS/JavaScript (for development)
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/ENiGMA-101/Match-Point_turf-booking-system.git
-   cd Match-Point_turf-booking-system
+   git clone https://github.com/ENiGMA-101/Arena-Finder_book-my-field.git
    ```
 
-2. **Install dependencies**
+2. **Navigate to the project directory**
    ```bash
-   npm install
+   cd Arena-Finder_book-my-field
    ```
 
-3. **Set up environment variables**
+3. **Open in browser**
    ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
+   # Simply open index.html in your browser
+   open index.html
    ```
 
-4. **Start the development server**
-   ```bash
-   npm run dev
-   ```
+## 🛠️ Built With
 
-5. **Open your browser**
-   ```
-   Navigate to http://localhost:3000
-   ```
+- **HTML5** - Structure and content
+- **CSS3** - Styling and animations
+- **JavaScript** - Interactive functionality
+- **Responsive Design** - Mobile-first approach
 
-### Build for Production
-```bash
-npm run build
-npm start
-```
+## 📸 Screenshots
 
----
+<img width="1271" height="632" alt="image" src="https://github.com/user-attachments/assets/105ff490-291f-4713-8d9e-d79b107adb62" />
+<img width="1271" height="632" alt="image" src="https://github.com/user-attachments/assets/06cf2e43-2ebe-41c8-b19e-a9bc88199ffd" />
+<img width="1271" height="632" alt="image" src="https://github.com/user-attachments/assets/35c90972-22d7-4769-9c29-4e9767a19289" />
+<img width="1262" height="1455" alt="image" src="https://github.com/user-attachments/assets/2d0649b3-470b-4499-a805-619cce2b88eb" />
+<img width="1271" height="632" alt="image" src="https://github.com/user-attachments/assets/e884280c-1584-4054-9667-134b3de9f17d" />
+<img width="1260" height="1626" alt="image" src="https://github.com/user-attachments/assets/e36bfbc4-23a6-4805-805b-dfd735c779d9" />
+<img width="1271" height="632" alt="image" src="https://github.com/user-attachments/assets/43bcff60-7f40-4554-85cc-b1df56392b4d" />
+<img width="1262" height="795" alt="image" src="https://github.com/user-attachments/assets/5353059f-1168-4088-a00c-5a944129d19b" />
+<img width="1260" height="546" alt="image" src="https://github.com/user-attachments/assets/3969c92f-e241-46ad-9122-1869a772a2c8" />
+<img width="1250" height="989" alt="image" src="https://github.com/user-attachments/assets/04e2a553-e666-42c4-87b6-5e7060bfb526" />
+<img width="1250" height="1121" alt="image" src="https://github.com/user-attachments/assets/56f0f8de-e38e-4319-81ed-4c99f2aa5177" />
 
-## 💻 Tech Stack
-<!--
-**Frontend:**
-- React / Vue / Angular
-- Tailwind CSS / Bootstrap
-- State Management (Redux / Vuex)
+## 🎯 Use Cases
 
-**Backend:**
-- Node.js / Express
-- Database (MongoDB / PostgreSQL)
-- REST API / GraphQL
-
-**Deployment:**
-- Docker
-- Cloud hosting (AWS / Vercel / Heroku)
--->
----
-
-## 📁 Project Structure
-<!--
-```
-Match-Point_turf-booking-system/
-├── frontend/              # React/Vue frontend application
-├── backend/               # Node.js API server
-├── docs/                  # Documentation
-├── .env.example          # Environment variables template
-├── README.md             # This file
-└── package.json          # Project dependencies
-```
--->
----
-
-## 🎯 Key Use Cases
-
-1. **Weekend Warriors** - Quickly book a cricket ground for weekend matches
-2. **Sports Teams** - Reserve regular time slots for training sessions
-3. **Corporate Events** - Organize sports tournaments and team building events
-4. **Fitness Groups** - Schedule group football or badminton sessions
-5. **Turf Owners** - Maximize field utilization and revenue
-
----
-
-## 📊 System Architecture
-<!--
-```
-┌─────────────────────────────────────────────────────┐
-│              MatchPOINT Platform                    │
-├─────────────────────────────────────────────────────┤
-│                                                     │
-│  ┌──────────────┐         ┌──────────────┐        │
-│  │   Players    │         │ Turf Owners  │        │
-│  └──────────────┘         └──────────────┘        │
-│         │                         │                 │
-│         └────────────┬────────────┘                 │
-│                      │                              │
-│         ┌────────────▼────────────┐                │
-│         │   Frontend (Web/App)    │                │
-│         └────────────┬────────────┘                │
-│                      │                              │
-│         ┌────────────▼────────────┐                │
-│         │    REST API Backend     │                │
-│         └────────────┬────────────┘                │
-│                      │                              │
-│         ┌────────────▼────────────┐                │
-│         │     Database (DB)       │                │
-│         │   Users • Turfs • ...   │                │
-│         └────────────────────────┘                │
-│                                                     │
-└─────────────────────────────────────────────────────┘
-```
--->
----
-
-## 👥 Team
-
-### nextGEN_DEVs
-
-| Name | Role | ID |
-|------|------|-----|
-| **Hamdil Hasan Partho** | Technical Lead | 2310040 |
-| **Faizullah Toushif** | Quality Assurance Lead | 23101037 |
-| **Sumaya Akter Lima** | Business Analyst | 23101041 |
-| **Shayla Hossen Simu** | Report Writing Lead | 23101042 |
-| **Safia Hossain** | Report Writing Lead | 23101053 |
-
----
-
-## 🛣️ Roadmap
-
-- [x] Project Ideation & Planning
-- [ ] Frontend UI/UX Design
-- [ ] Backend API Development
-- [ ] Database Schema Design
-- [ ] User Authentication & Authorization
-- [ ] Booking System Implementation
-- [ ] Payment Integration
-- [ ] Testing & QA
-- [ ] Beta Launch
-- [ ] Production Deployment
-
----
+- **Sports Enthusiasts** - Find and book fields for regular practice sessions
+- **Event Organizers** - Reserve venues for tournaments and competitions
+- **Facility Owners** - List and manage arena availability
+- **Teams & Clubs** - Schedule recurring bookings for team activities
 
 ## 🤝 Contributing
 
-We welcome contributions! Here's how you can help:
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/AmazingFeature`)
-3. **Commit** your changes (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** to the branch (`git push origin feature/AmazingFeature`)
-5. **Open** a Pull Request
-
-### Development Guidelines
-- Follow the existing code style
-- Write clear commit messages
-- Add tests for new features
-- Update documentation as needed
-
----
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## 📝 License
 
-This project is part of a Software Engineering Lab course and is open for educational purposes.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
+## 👤 Author
 
-## 📞 Support & Contact
+**ENiGMA-101**
 
-For questions, suggestions, or issues:
-- 📧 Email: [hamdihasan101@gmail.com]
-- 🐛 Report Issues: [GitHub Issues](https://github.com/ENiGMA-101/Match-Point_turf-booking-system/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/ENiGMA-101/Match-Point_turf-booking-system/discussions)
+- GitHub: [@ENiGMA-101](https://github.com/ENiGMA-101)
+- Project Link: [Arena-Finder_book-my-field](https://github.com/ENiGMA-101/Arena-Finder_book-my-field)
+
+## 🙏 Acknowledgments
+
+- Hat tip to anyone whose code was used
+- Inspiration from modern booking platforms
+- Community feedback and support
+
+## 📞 Contact & Support
+
+Have questions or suggestions? Feel free to open an issue or reach out!
 
 ---
 
 <div align="center">
+
+**⭐ Star this repository if you find it helpful!**
+
+Made with ❤️ by ENiGMA-101
+
+</div>
 
 ### Made with ❤️ by nextGEN_DEVs
 
