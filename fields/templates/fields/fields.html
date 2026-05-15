@@ -23,3 +23,26 @@
                     </div>
                 </div>
                 
+                <!-- Field Type Filter -->
+                <div class="col-md-2">
+                    <select name="field_type" class="form-control">
+                        <option value="">All Sports</option>
+                        {% for type in field_types %}
+                            <option value="{{ type.0 }}" {% if request.GET.field_type == type.0 %}selected{% endif %}>
+                                {{ type.1 }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Availability Filter -->
+                <div class="col-md-2">
+                    <select name="availability" class="form-control">
+                        <option value="">Free & Paid</option>
+                        {% for avail in availability_types %}
+                            <option value="{{ avail.0 }}" {% if request.GET.availability == avail.0 %}selected{% endif %}>
+                                {{ avail.1 }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
