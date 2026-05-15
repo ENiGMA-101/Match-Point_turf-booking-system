@@ -20,3 +20,28 @@
                     <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
                         <span class="text-white fs-1">🏟️</span>
                     </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ field.name }}</h5>
+                    <p class="card-text">
+                        <strong>Type:</strong> {{ field.field_type }}<br>
+                        <strong>Location:</strong> {{ field.location }}<br>
+                        <strong>Cost:</strong> ${{ field.cost_per_hour }}/hour<br>
+                        <strong>Capacity:</strong> {{ field.capacity }} players<br>
+                        <strong>Time Slots:</strong> {{ field.fieldtimeslot_set.count }} slots<br>
+                        <strong>Status:</strong> 
+                        {% if field.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                        {% endif %}
+                    </p>
+                    {% if field.is_women_only %}
+                        <span class="badge bg-pink mb-2">Women Only</span>
+                    {% endif %}
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="{% url 'fields:field_detail' field.id %}" class="btn btn-info btn-sm">👁️ View</a>
+                        <a href="{% url 'fields:edit_field' field.id %}" class="btn btn-primary btn-sm">✏️ Edit</a>
+                        <a href="{% url 'fields:manage_time_slots' field.id %}" class="btn btn-warning btn-sm">🕐 Time Slots</a>
+                        <a href="{% url 'fields:delete_field' field.id %}" class="btn btn-danger btn-sm">🗑️ Delete</a>
+                    </div>
