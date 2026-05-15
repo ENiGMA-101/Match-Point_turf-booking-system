@@ -23,3 +23,48 @@
                         <li>These slots are automatically created when you add a field</li>
                     </ul>
                 </div>
+                
+                <div class="row">
+                    {% for slot in time_slots %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card {% if slot.is_available %}border-success{% else %}border-danger{% endif %}">
+                                <div class="card-body text-center p-3">
+                                    <h6 class="mb-2">{{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}</h6>
+                                    <span class="badge {% if slot.is_available %}bg-success{% else %}bg-danger{% endif %}">
+                                        {% if slot.is_available %}✅ Available{% else %}❌ Unavailable{% endif %}
+                                    </span>
+                                    <div class="mt-2">
+                                        <small class="text-muted">90 minutes</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                {% if not time_slots %}
+                    <div class="text-center">
+                        <div class="alert alert-warning">
+                            <h5>⚠️ No Time Slots Found</h5>
+                            <p>This field doesn't have any time slots yet.</p>
+                            <p class="mb-0">Time slots should be automatically created when you add a field.</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="createDefaultSlots()">
+                            🕐 Create Default Time Slots
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function createDefaultSlots() {
+    if (confirm('This will create default 90-minute time slots from 6 AM to 11 PM. Continue?')) {
+        // You can implement AJAX call here to create slots
+        alert('This feature can be implemented to create default slots via AJAX.');
+    }
+}
+</script>
+{% endblock %}
