@@ -36,3 +36,27 @@
                             {% endfor %}
                         </select>
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="location" class="form-control" 
+                               placeholder="Search by location" value="{{ current_filters.location }}">
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="mb-3">
+                        <label class="form-label">Price Range (BDT/hour)</label>
+                        <div class="row">
+                            <div class="col-6">
+                                <input type="number" name="min_price" class="form-control" 
+                                       placeholder="Min" value="{{ current_filters.min_price }}">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" name="max_price" class="form-control" 
+                                       placeholder="Max" value="{{ current_filters.max_price }}">
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            Range: {{ price_range.min_price|default:"0" }} - {{ price_range.max_price|default:"0" }} BDT
+                        </small>
+                    </div>
