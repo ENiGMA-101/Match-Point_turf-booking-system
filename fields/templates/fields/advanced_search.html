@@ -174,3 +174,16 @@
                                 </div>
                             {% endif %}
                             
+                            <!-- Badges -->
+                            <div class="mb-3">
+                                {% if field.availability_type == 'Free' %}
+                                    <span class="badge bg-success">FREE</span>
+                                {% else %}
+                                    <span class="badge bg-primary">PAID</span>
+                                {% endif %}
+                                
+                                {% if field.is_women_only %}
+                                    <span class="badge bg-pink">Women Only</span>
+                                {% endif %}
+                            </div>
+                            
