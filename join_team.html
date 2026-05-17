@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Join Team{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3>👥 Join Team Request</h3>
+            </div>
+            <div class="card-body">
+                <div class="team-formation-card">
+                    <h5>{{ team_formation.booking.user.username }}'s Team</h5>
+                    <p><strong>Field:</strong> {{ team_formation.booking.field.name }}</p>
+                    <p><strong>Date:</strong> {{ team_formation.booking.booking_date }}</p>
+                    <p><strong>Time:</strong> {{ team_formation.booking.time_slot.start_time }} - {{ team_formation.booking.time_slot.end_time }}</p>
+                    <p><strong>Players Needed:</strong> {{ team_formation.required_players }}</p>
+                    {% if team_formation.skill_level %}
+                        <p><strong>Skill Level:</strong> {{ team_formation.skill_level }}</p>
+                    {% endif %}
+                    {% if team_formation.description %}
+                        <p><strong>Description:</strong> {{ team_formation.description }}</p>
+                    {% endif %}
+                </div>
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="message" class="form-label">💬 Message to Team Leader</label>
+                        <textarea name="message" class="form-control" rows="4" 
+                                  placeholder="Tell them why you'd like to join their team..."></textarea>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            🎯 Send Join Request
+                        </button>
+                        <a href="{% url 'fields:field_detail' team_formation.booking.field.id %}" class="btn btn-secondary">
+                            ← Back to Field
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
