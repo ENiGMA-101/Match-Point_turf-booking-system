@@ -1,0 +1,457 @@
+{% extends 'base.html' %}
+{% block title %}Payment - {{ booking.field.name }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="payment-container">
+            <div class="payment-methods-selection" id="methodSelection">
+                <h4 class="text-center mb-4">Select Payment Method</h4>
+                <div class="method-grid">
+                    <div class="method-card bkash-card" onclick="selectMethod('bkash')">
+                        <div class="method-header">
+                            <div class="method-logo">bKash</div>
+                        </div>
+                        <div class="method-subtitle">Mobile Banking</div>
+                    </div>
+                    <div class="method-card nagad-card" onclick="selectMethod('nagad')">
+                        <div class="method-header">
+                            <div class="method-logo">Nagad</div>
+                        </div>
+                        <div class="method-subtitle">Mobile Banking</div>
+                    </div>
+                    <div class="method-card upay-card" onclick="selectMethod('upay')">
+                        <div class="method-header">
+                            <div class="method-logo">Upay</div>
+                        </div>
+                        <div class="method-subtitle">Mobile Banking</div>
+                    </div>
+                </div>
+                <div class="booking-summary-mini">
+                    <div class="summary-item">
+                        <span>{{ booking.field.name }}</span>
+                        <strong>${{ booking.total_cost }}</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="payment-form-container" id="paymentFormContainer" style="display: none;">
+                <div class="payment-header" id="paymentHeader">
+                    <div class="method-name" id="methodName">bKash</div>
+                    <div class="method-subtitle">Mobile Banking</div>
+                </div>
+                <form method="post" id="paymentForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="payment_method" id="selectedMethod" value="">
+                    <div class="form-group">
+                        <label class="field-label">
+                            <i class="fas fa-mobile-alt"></i> Mobile Number
+                        </label>
+                        <input type="text"
+                               name="mobile"
+                               id="mobileInput"
+                               class="payment-input"
+                               placeholder="01843097354"
+                               maxlength="11"
+                               required>
+                        <small class="field-hint">Enter your mobile number (11 digits)</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="field-label">
+                            <i class="fas fa-lock"></i> PIN
+                        </label>
+                        <input type="password"
+                               name="pin"
+                               id="pinInput"
+                               class="payment-input pin-input"
+                               placeholder="••••"
+                               maxlength="4"
+                               required>
+                        <small class="field-hint">Enter your 4-digit PIN</small>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit" class="pay-button" id="payButton">
+                            💳 PAY ${{ booking.total_cost }}
+                        </button>
+                        <button type="button" class="cancel-button" onclick="goBack()">
+                            ← CANCEL PAYMENT
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="success-container" id="successContainer" style="display: none;">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>Payment Successful!</h3>
+                <p>Your booking has been confirmed</p>
+                <div class="success-details">
+                    <div class="detail-row">
+                        <span>Transaction ID:</span>
+                        <strong id="transactionId"></strong>
+                    </div>
+                    <div class="detail-row">
+                        <span>Amount:</span>
+                        <strong>${{ booking.total_cost }}</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span>Field:</span>
+                        <strong>{{ booking.field.name }}</strong>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <a href="{% url 'bookings:booking_detail' booking.id %}" class="success-button">
+                        View Booking Details
+                    </a>
+                    <a href="{% url 'bookings:my_bookings' %}" class="secondary-button">
+                        My Bookings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+let currentMethod = '';
+function selectMethod(method) {
+    currentMethod = method;
+    document.getElementById('selectedMethod').value = method;
+    document.getElementById('methodSelection').style.display = 'none';
+    const formContainer = document.getElementById('paymentFormContainer');
+    formContainer.style.display = 'block';
+    const header = document.getElementById('paymentHeader');
+    const methodName = document.getElementById('methodName');
+    const payButton = document.getElementById('payButton');
+    const mobileInput = document.getElementById('mobileInput');
+    const pinInput = document.getElementById('pinInput');
+    mobileInput.value = '';
+    pinInput.value = '';
+    if (method === 'bkash') {
+        header.className = 'payment-header bkash-header';
+        methodName.textContent = 'bKash';
+        payButton.className = 'pay-button bkash-button';
+        mobileInput.placeholder = '01XXXXXXXXX';
+        pinInput.placeholder = '••••';
+    } else if (method === 'nagad') {
+        header.className = 'payment-header nagad-header';
+        methodName.textContent = 'Nagad';
+        payButton.className = 'pay-button nagad-button';
+        mobileInput.placeholder = '01XXXXXXXXX';
+        pinInput.placeholder = '••••';
+    } else if (method === 'upay') {
+        header.className = 'payment-header upay-header';
+        methodName.textContent = 'Upay';
+        payButton.className = 'pay-button upay-button';
+        mobileInput.placeholder = '01XXXXXXXXX';
+        pinInput.placeholder = '••••';
+    }
+}
+function goBack() {
+    document.getElementById('paymentFormContainer').style.display = 'none';
+    document.getElementById('methodSelection').style.display = 'block';
+}
+document.getElementById('paymentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const mobile = document.getElementById('mobileInput').value;
+    const pin = document.getElementById('pinInput').value;
+    if (mobile.length !== 11 || !mobile.startsWith('01')) {
+        alert('Please enter a valid 11-digit mobile number starting with 01');
+        return;
+    }
+    if (pin.length !== 4) {
+        alert('Please enter a valid 4-digit PIN');
+        return;
+    }
+    const payButton = document.getElementById('payButton');
+    payButton.disabled = true;
+    payButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    setTimeout(() => {
+        document.getElementById('paymentFormContainer').style.display = 'none';
+        const transactionId = generateTransactionId();
+        document.getElementById('transactionId').textContent = transactionId;
+        document.getElementById('successContainer').style.display = 'block';
+        setTimeout(() => {
+            payButton.disabled = false;
+            payButton.innerHTML = `💳 PAY ${{ booking.total_cost }}`;
+            this.submit();
+        }, 2000);
+    }, 2000);
+});
+function generateTransactionId() {
+    const prefixes = {'bkash': 'BK', 'nagad': 'NG', 'upay': 'UP'};
+    const prefix = prefixes[currentMethod] || 'TXN';
+    const timestamp = Date.now().toString().slice(-8);
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    return `${prefix}${timestamp}${random}`;
+}
+document.getElementById('mobileInput').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length > 11) value = value.slice(0, 11);
+    e.target.value = value;
+});
+document.getElementById('pinInput').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length > 4) value = value.slice(0, 4);
+    e.target.value = value;
+});
+</script>
+<style>
+.payment-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    min-height: 500px;
+}
+.payment-methods-selection {
+    padding: 30px;
+}
+.method-grid {
+    display: grid;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+.method-card {
+    padding: 20px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    border: 2px solid transparent;
+}
+.method-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+.bkash-card {
+    background: linear-gradient(135deg, #E2136E, #C91A5B);
+    color: white;
+}
+.nagad-card {
+    background: linear-gradient(135deg, #F7941D, #E85D04);
+    color: white;
+}
+.upay-card {
+    background: linear-gradient(135deg, #00A651, #008F42);
+    color: white;
+}
+.method-logo {
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin-bottom: 5px;
+}
+.method-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+.booking-summary-mini {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+}
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.payment-form-container {
+    animation: slideIn 0.3s ease;
+}
+.payment-header {
+    padding: 25px;
+    text-align: center;
+    color: white;
+    font-weight: 700;
+}
+.bkash-header {
+    background: linear-gradient(135deg, #E2136E, #C91A5B);
+}
+.nagad-header {
+    background: linear-gradient(135deg, #F7941D, #E85D04);
+}
+.upay-header {
+    background: linear-gradient(135deg, #00A651, #008F42);
+}
+.method-name {
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+.form-group {
+    padding: 20px 30px;
+}
+.field-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #333;
+}
+.payment-input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+.payment-input:focus {
+    outline: none;
+    border-color: #007bff;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+.pin-input {
+    font-family: monospace;
+    letter-spacing: 0.5em;
+    text-align: center;
+}
+.field-hint {
+    color: #666;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    display: block;
+}
+.button-group {
+    padding: 20px 30px 30px;
+    display: grid;
+    gap: 15px;
+}
+.pay-button {
+    width: 100%;
+    padding: 18px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.bkash-button {
+    background: linear-gradient(135deg, #E2136E, #C91A5B);
+}
+.nagad-button {
+    background: linear-gradient(135deg, #F7941D, #E85D04);
+}
+.upay-button {
+    background: linear-gradient(135deg, #00A651, #008F42);
+}
+.pay-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+.pay-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+.cancel-button {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #6c757d;
+    border-radius: 12px;
+    background: white;
+    color: #6c757d;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.cancel-button:hover {
+    background: #6c757d;
+    color: white;
+}
+.success-container {
+    padding: 40px 30px;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+.success-icon {
+    font-size: 4rem;
+    color: #28a745;
+    margin-bottom: 20px;
+    animation: bounce 0.6s ease;
+}
+.success-details {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.detail-row:last-child {
+    margin-bottom: 0;
+    border-top: 1px solid #dee2e6;
+    padding-top: 10px;
+}
+.success-button {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+.success-button:hover {
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+}
+.secondary-button {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background: white;
+    color: #6c757d;
+    text-decoration: none;
+    border: 2px solid #6c757d;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.secondary-button:hover {
+    background: #6c757d;
+    color: white;
+}
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+@keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+@media (max-width: 768px) {
+    .payment-container {
+        margin: 10px;
+    }
+    .form-group {
+        padding: 15px 20px;
+    }
+    .button-group {
+        padding: 15px 20px 25px;
+    }
+}
+</style>
+{% endblock %}
