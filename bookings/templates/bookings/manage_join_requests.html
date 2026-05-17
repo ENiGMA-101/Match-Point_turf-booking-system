@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Manage Join Requests{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3>👥 Manage Join Requests</h3>
+                <p class="mb-0">{{ team_formation.booking.field.name }} - {{ team_formation.booking.booking_date }}</p>
+            </div>
+            <div class="card-body">
+                {% for request in join_requests %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6>{{ request.user.get_full_name|default:request.user.username }}</h6>
+                                    <p class="text-muted mb-1">{{ request.user.email }}</p>
+                                    {% if request.message %}
+                                        <p class="mb-2"><strong>Message:</strong> {{ request.message }}</p>
+                                    {% endif %}
+                                    <small class="text-muted">Requested on {{ request.created_at|date:"M d, Y H:i" }}</small>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <form method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="request_id" value="{{ request.id }}">
+                                        <button type="submit" name="action" value="accept" class="btn btn-success btn-sm">
+                                            ✅ Accept
+                                        </button>
+                                        <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm">
+                                            ❌ Reject
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="text-center">
+                        <h5>No pending join requests</h5>
+                        <p>When players request to join your team, they'll appear here.</p>
+                    </div>
+                {% endfor %}
+                <div class="d-grid mt-4">
+                    <a href="{% url 'bookings:booking_detail' team_formation.booking.id %}" class="btn btn-secondary">
+                        ← Back to Booking Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
