@@ -4,6 +4,8 @@
 
 **"Feel the pitch, Track the game"**
 
+**Live Server :** *https://arena-finder-book-my-field.onrender.com/*
+
 A modern, full-stack web application for effortlessly finding and booking sports arenas and fields. 
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](LICENSE)
@@ -79,11 +81,6 @@ MatchPOINT is built to be fast, reliable, and scalable.
 
 ## 📸 Screenshots
 
-<details>
-<summary>Click to view screenshots of the MatchPOINT experience</summary>
-
-<br>
-
 <img width="1271" alt="image" src="https://github.com/user-attachments/assets/105ff490-291f-4713-8d9e-d79b107adb62" />
 <img width="1271" alt="image" src="https://github.com/user-attachments/assets/06cf2e43-2ebe-41c8-b19e-a9bc88199ffd" />
 <img width="1271" alt="image" src="https://github.com/user-attachments/assets/35c90972-22d7-4769-9c29-4e9767a19289" />
@@ -96,7 +93,6 @@ MatchPOINT is built to be fast, reliable, and scalable.
 <img width="1250" alt="image" src="https://github.com/user-attachments/assets/04e2a553-e666-42c4-87b6-5e7060bfb526" />
 <img width="1250" alt="image" src="https://github.com/user-attachments/assets/56f0f8de-e38e-4319-81ed-4c99f2aa5177" />
 
-</details>
 
 ## 👥 Contributors
 
