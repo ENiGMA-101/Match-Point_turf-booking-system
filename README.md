@@ -102,9 +102,9 @@ This project is made possible by the hard work and dedication of the **nextGEN_D
 | :--- | :--- | :--- | :--- |
 | <img src="https://github.com/user-attachments/assets/fcd9001f-506f-4475-8a4d-f4ab903f2476" width="40" style="border-radius:50%; vertical-align:middle;"> | **Hamdil Hasan** | [@ENiGMA-101](https://github.com/ENiGMA-101) | 🛠️ **Project Lead / Lead Backend Developer** (Core Architecture & Python Logic) |
 | <img src="https://avatars.githubusercontent.com/u/225064400?v=4" width="40" style="border-radius:50%; vertical-align:middle;"> | **Simu** | [@Simu2003](https://github.com/Simu2003) | 🎨 **Lead Frontend Developer** (HTML Structure & Core UI) |
-| <img src="https://avatars.githubusercontent.com/u/209243691?v=4" width="40" style="border-radius:50%; vertical-align:middle;"> | **Sumaya** | [@sumaya203](https://github.com/sumaya203) | 💅 **UI/UX Designer** (CSS Styling, Animations & Layout) |
-| <img src="https://avatars.githubusercontent.com/u/140740267?v=4" width="40" style="border-radius:50%; vertical-align:middle;"> | **Toushif** | [@TOUSHIF55](https://github.com/TOUSHIF55) | 🗄️ **Database & Backend Integration** (Python Data Models & APIs) |
-| <img src="https://avatars.githubusercontent.com/u/224979084?v=4" width="40" style="border-radius:50%; vertical-align:middle;"> | **Safia** | [@Safia-Hossain](https://github.com/Safia-Hossain) | 🧪 **QA Tester & Documentation** (Testing workflows, Validation & Readme) |
+| <img src="https://avatars.githubusercontent.com/u/209243691?v=4" width="40" style="border-radius:50%; vertical-align:middle;"> | **Sumaya** | [@sumaya203](https://github.com/sumaya203) | 🗄️ **Database & Backend Integration** (Python Data Models & APIs) |
+| <img src="https://avatars.githubusercontent.com/u/140740267?v=4" width="40" style="border-radius:50%; vertical-align:middle;"> | **Toushif** | [@TOUSHIF55](https://github.com/TOUSHIF55) | 🧪 **QA Tester & Documentation** (Testing workflows, Validation & Readme) |
+| <img src="https://avatars.githubusercontent.com/u/224979084?v=4" width="40" style="border-radius:50%; vertical-align:middle;"> | **Safia** | [@Safia-Hossain](https://github.com/Safia-Hossain) | 💅 **UI/UX Designer** (CSS Styling, Animations & Layout) |
 
 ## 🤝 Contributing
 
